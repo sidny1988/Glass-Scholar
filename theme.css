@@ -1,5 +1,5 @@
 /* =====================================================================
-   璃墨 Glass Scholar — Obsidian Theme  (v1.0.2)
+   璃墨 Glass Scholar — Obsidian Theme  (v1.0.3)
    苹果磨砂玻璃质感 · 极简 · 论文级排版
    ---------------------------------------------------------------------
    全界面透明底：纯 CSS 径向渐变光晕（8 种配色）。
@@ -122,26 +122,43 @@ settings:
 */
 
 
+/* =====================================================================
+   CSS 变量
+   ===================================================================== */
 body {
+  /* —— 排版 —— */
   --gs-line-height: 1.85;
   --gs-measure: 72;
+  /* —— 玻璃（主面板区透明，仅弹窗/通知保留）—— */
   --gs-blur: 12;
   --gs-glass-opacity: 0;
+  /* —— 光晕 —— */
   --gs-glow-blur: 40;
   --gs-glow-opacity: 1;
-  /* 默认晨曦蓝（蓝白渐变）配色 */
   --gs-glow-1: #5b8dff;
   --gs-glow-2: #9bbcff;
   --gs-glow-3: #c8dcff;
   --gs-glow-4: #e8f0ff;
   --gs-glow-base: #eaf1ff;
+  /* —— 圆角 —— */
   --radius-s: 6px;
   --radius-m: 10px;
   --radius-l: 14px;
-  --raised-background: color-mix(in srgb, var(--background-secondary) 70%, transparent);
-  --raised-blur: blur(16px) saturate(180%);
-  --raised-shadow: 0 6px 18px rgba(0,0,0,0.12), inset 0 1px 1px var(--gs-lg-rim);
+  /* —— Obsidian 原生 raised 变量清零 —— */
+  --raised-background: transparent;
+  --raised-blur: none;
+  --raised-shadow: none;
   --raised-mask-border-width: 0px;
+  /* —— 字体 —— */
+  --font-interface-theme: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+      "PingFang SC", "Microsoft YaHei", "Segoe UI", system-ui, sans-serif;
+  --font-text-theme: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+      "PingFang SC", "Microsoft YaHei", "Segoe UI", system-ui, sans-serif;
+  --font-monospace-theme: "JetBrains Mono", "SF Mono", "Menlo", "Consolas",
+      "Source Code Pro", monospace;
+
+  position: relative;
+  min-height: 100vh;
 }
 
 
@@ -156,15 +173,12 @@ body.theme-light {
 
   --gs-glass-bg:       color-mix(in srgb, #ffffff calc(var(--gs-glass-opacity, 0.42) * 100%), transparent);
   --gs-glass-bg-alt:   color-mix(in srgb, #ffffff calc(var(--gs-glass-opacity, 0.42) * 80%), transparent);
-  --gs-glass-border:   rgba(255, 255, 255, 0.5);
   --gs-glass-border-2: rgba(20, 30, 50, 0.06);
   --gs-glass-shadow:   inset 0 1px 1px rgba(255,255,255,0.5), 0 6px 18px rgba(31, 48, 90, 0.05);
   --gs-lg-tint: #ffffff;
   --gs-lg-rim: rgba(255,255,255,0.7);
-  --gs-lg-edge: rgba(255,255,255,0.45);
 
   --gs-code-bg: rgba(20, 30, 50, 0.055);
-  --gs-code-border: rgba(20, 30, 50, 0.08);
   --gs-quote-bg: rgba(74, 111, 165, 0.07);
   --gs-table-head: rgba(74, 111, 165, 0.10);
   --gs-table-stripe: rgba(74, 111, 165, 0.035);
@@ -215,15 +229,12 @@ body.theme-dark {
 
   --gs-glass-bg:       color-mix(in srgb, #1a202e calc(var(--gs-glass-opacity, 0.42) * 100%), transparent);
   --gs-glass-bg-alt:   color-mix(in srgb, #1a202e calc(var(--gs-glass-opacity, 0.42) * 65%), transparent);
-  --gs-glass-border:   rgba(255, 255, 255, 0.08);
   --gs-glass-border-2: rgba(255, 255, 255, 0.05);
   --gs-glass-shadow:   inset 0 1px 1px rgba(255,255,255,0.10), 0 6px 18px rgba(0, 0, 0, 0.10);
   --gs-lg-tint: #232a35;
   --gs-lg-rim: rgba(255,255,255,0.16);
-  --gs-lg-edge: rgba(255,255,255,0.10);
 
   --gs-code-bg: rgba(255, 255, 255, 0.06);
-  --gs-code-border: rgba(255, 255, 255, 0.09);
   --gs-quote-bg: rgba(122, 162, 214, 0.12);
   --gs-table-head: rgba(122, 162, 214, 0.16);
   --gs-table-stripe: rgba(122, 162, 214, 0.05);
@@ -285,17 +296,6 @@ body.gs-wp-sakura   { --gs-glow-1: #ff6b8a; --gs-glow-2: #ff9a6b; --gs-glow-3: #
 body.gs-wp-mint     { --gs-glow-1: #2bb870; --gs-glow-2: #2bc4c0; --gs-glow-3: #6bd968; --gs-glow-4: #1f9f80; --gs-glow-base: #e3f5ee; }
 
 
-/* =====================================================================
-   字体
-   ===================================================================== */
-body {
-  --font-interface-theme: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-      "PingFang SC", "Microsoft YaHei", "Segoe UI", system-ui, sans-serif;
-  --font-text-theme: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-      "PingFang SC", "Microsoft YaHei", "Segoe UI", system-ui, sans-serif;
-  --font-monospace-theme: "JetBrains Mono", "SF Mono", "Menlo", "Consolas",
-      "Source Code Pro", monospace;
-}
 body.gs-use-serif {
   --font-text-theme: "Source Serif 4", "Source Serif Pro", "Noto Serif SC",
       "Songti SC", "STSong", "SimSun", Georgia, "Times New Roman", serif;
@@ -303,33 +303,21 @@ body.gs-use-serif {
 
 
 /* =====================================================================
-   背景光晕层 —— 蓝色渐变光晕的关键
+   背景光晕层
    ===================================================================== */
-body { position: relative; min-height: 100vh; }
 
-/* 顶层容器透明，露出光晕背景
-   .workspace-leaf / .workspace-leaf-content 不在此列，
-   由下方"磨砂玻璃"规则提供极透的半透明层 */
+/* 顶层容器：全部透明，光晕穿透 */
 body .app-container,
 body .workspace,
 body .workspace-split,
-body .view-content,
-body .workspace-tabs {
+body .workspace-leaf,
+body .workspace-tabs,
+body .view-content {
   background: transparent !important;
 }
 
-/* .workspace-leaf：也透明，不堆叠背景层 */
-body .workspace-leaf {
-  background: transparent !important;
-}
-
-/* 侧栏分割容器透明 */
+/* ── 左侧栏：递归透明，光晕直穿 ── */
 body .mod-left-split,
-body .mod-right-split {
-  background: transparent !important;
-}
-
-/* 左侧栏内全部子容器：递归透明，光晕底色完全穿透 */
 body .mod-left-split .workspace-tabs,
 body .mod-left-split .workspace-tab-container,
 body .mod-left-split .workspace-leaf,
@@ -342,6 +330,41 @@ body .mod-left-split .nav-header {
   background: transparent !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+}
+
+/* ── 右侧栏：对称递归透明 ── */
+body .mod-right-split,
+body .mod-right-split .workspace-tabs,
+body .mod-right-split .workspace-tab-container,
+body .mod-right-split .workspace-leaf,
+body .mod-right-split .workspace-leaf-content,
+body .mod-right-split .view-content,
+body .mod-right-split .view-header,
+body .mod-right-split .tree-item-self,
+body .mod-right-split .tree-item,
+body .mod-right-split .nav-header {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+}
+
+/* ── 主内容区：去阴影去边框，全局通透 ── */
+body .workspace-split.mod-root .workspace-leaf,
+body .workspace-split.mod-root .workspace-leaf-content,
+body .workspace-split.mod-root .view-content,
+body .workspace-split.mod-root .view-header {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
 }
 
 /* 第三方插件弹窗：强制不透明 */
@@ -397,10 +420,9 @@ body::after {
 
 
 /* =====================================================================
-   磨砂玻璃 —— 无硬边框，仅柔和阴影，通透
+   磨砂玻璃 —— 仅弹窗 / 通知 / 悬浮层保留
    ===================================================================== */
-body .workspace-leaf-content:not(.x-color-picker-wrapper *),
-body .workspace-split.mod-root .workspace-leaf:not(.x-color-picker-wrapper *),
+/* 弹窗 & 通知：完整玻璃 */
 body .modal-container .modal:not(.x-color-picker-wrapper *),
 body .notice:not(.x-color-picker-wrapper *) {
   background-color: var(--gs-glass-bg);
@@ -410,8 +432,6 @@ body .notice:not(.x-color-picker-wrapper *) {
   border: none;
 }
 
-body .workspace-tab-header-container:not(.x-color-picker-wrapper *),
-body .view-header:not(.x-color-picker-wrapper *),
 body .status-bar:not(.x-color-picker-wrapper *) {
   background-color: var(--gs-glass-bg-alt);
   backdrop-filter: blur(var(--gs-blur)) saturate(180%);
@@ -419,21 +439,12 @@ body .status-bar:not(.x-color-picker-wrapper *) {
   border: none;
 }
 
-/* 左侧工具栏图标条：完全透明，光晕穿透 */
+/* 左侧 Ribbon：完全透明 */
 body .workspace-ribbon.mod-left:not(.x-color-picker-wrapper *) {
   background: transparent !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   border: none;
-}
-
-/* 侧栏内容区：完全透明，光晕背景直接穿透，不留玻璃遮挡层 */
-body .workspace-leaf.mod-side-dock .workspace-leaf-content:not(.x-color-picker-wrapper *) {
-  background: transparent !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  border: none;
-  box-shadow: none;
 }
 
 /* 去掉板块之间的硬分隔线 */
@@ -443,50 +454,40 @@ body .workspace-leaf.mod-side-dock .workspace-leaf-content:not(.x-color-picker-w
   border: none !important;
 }
 
-/* 桌面端：面板间距极小，弱化卡片边界感，界面融为一体 */
+/* 桌面端：无卡片感，全局通透 */
 @media (min-width: 900px) {
   body .workspace-split.mod-root {
-    padding: 6px;
-    gap: 2px;
-  }
-  body .workspace-split.mod-root .workspace-tabs {
-    border-radius: 6px;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    padding: 0;
+    gap: 0;
   }
   body .workspace-split.mod-horizontal > .workspace-leaf.mod-side-dock {
-    margin: 6px 2px 6px 6px;
-    border-radius: 6px;
-    overflow: hidden;
+    margin: 0;
   }
   body .workspace-split.mod-horizontal > .workspace-leaf.mod-side-dock + .workspace-leaf {
-    margin: 6px 6px 6px 2px;
+    margin: 0;
   }
 }
 
 .titlebar, .titlebar-button-container { background: transparent !important; border: none; }
 
-/* 标签栏：与内容页共用同一块玻璃，融合无白边 */
+/* 标签栏：无玻璃无模糊，与内容区完全融合 */
 .workspace-tab-header-container {
   margin: 0;
   padding: 0 8px;
   border-radius: 0;
   border: none !important;
   gap: 1px;
-  background: var(--gs-glass-bg) !important;
-  backdrop-filter: blur(var(--gs-blur)) saturate(180%);
-  -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(180%);
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   box-shadow: none !important;
 }
-.workspace-tab-header { border-radius: 8px; margin: 0; padding: 4px 10px; transition: background .2s ease, box-shadow .2s ease; }
+.workspace-tab-header { border-radius: 8px; margin: 0; padding: 4px 10px; transition: background .2s ease; }
 .workspace-tab-header:hover {
   background: color-mix(in srgb, var(--gs-lg-tint) calc(var(--gs-glass-opacity, 0.42) * 32%), transparent);
 }
 .workspace-tab-header.is-active {
   background: color-mix(in srgb, var(--gs-lg-tint) calc(var(--gs-glass-opacity, 0.42) * 72%), transparent);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  box-shadow: inset 0 1px 1px var(--gs-lg-rim);
 }
 .workspace-tab-header.is-active .workspace-tab-header-inner { background: transparent; }
 .workspace-tab-header-inner { border-radius: 8px; gap: 6px; }
@@ -502,9 +503,15 @@ body .workspace-leaf.mod-side-dock .workspace-leaf-content:not(.x-color-picker-w
   color: var(--gs-accent);
 }
 
-/* 视图标题栏：透明、无阴影、无边框，与上方标签页直接融合 */
+/* 视图标题栏：无分割线无阴影，与上下内容完全融合 */
+.workspace-leaf .view-header,
+.workspace-leaf.mod-active .view-header,
+.mod-left-split .view-header,
+.mod-right-split .view-header,
+.mod-root .view-header,
 .view-header {
   border: none !important;
+  border-bottom: none !important;
   background: transparent !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
@@ -512,14 +519,6 @@ body .workspace-leaf.mod-side-dock .workspace-leaf-content:not(.x-color-picker-w
 }
 .view-header-title { font-weight: 600; letter-spacing: 0.01em; padding: 0 4px; }
 .view-header-title-container { padding-inline: 8px; }
-
-/* 内容页顶部去掉白色高光，与标签页/标题通透融合 */
-.workspace-split.mod-root .workspace-leaf-content {
-  box-shadow: 0 6px 18px rgba(31, 48, 90, 0.04);
-}
-body.theme-dark .workspace-split.mod-root .workspace-leaf-content {
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.10);
-}
 
 /* 堆叠标签页：正文内容页实心、无 backdrop-filter，杜绝背面内容透出重叠（含新加页面） */
 .mod-stacked .workspace-leaf,
@@ -542,9 +541,6 @@ body.theme-dark .workspace-split.mod-root .workspace-leaf-content {
 .tree-item-self.is-clickable:hover,
 .nav-file-title:hover, .nav-folder-title:hover, .nav-file-title.is-active {
   background: color-mix(in srgb, var(--gs-lg-tint) calc(var(--gs-glass-opacity, 0.42) * 42%), transparent);
-  backdrop-filter: blur(8px) saturate(160%);
-  -webkit-backdrop-filter: blur(8px) saturate(160%);
-  box-shadow: inset 0 1px 1px var(--gs-lg-rim);
   border-radius: 9px;
 }
 
@@ -1214,21 +1210,10 @@ body.gs-autohide-ui .workspace-ribbon:hover {
   border-radius: 12px !important;
 }
 
-/* 标签面板内：激活态标签不过分突出 */
-.workspace-tab-header.is-active {
-  box-shadow: none !important;
-}
-
 /* 搜索结果高亮：柔和过渡 */
 .search-result-file-match {
   border-radius: 4px;
   border: none !important;
-}
-
-/* 文件浏览器：hover/active 状态无 box-shadow，纯背景过渡 */
-.tree-item-self.is-clickable:hover,
-.nav-file-title:hover, .nav-folder-title:hover, .nav-file-title.is-active {
-  box-shadow: none !important;
 }
 
 /* 石墨编辑器：去掉行号区与内容区的竖线分隔 */
