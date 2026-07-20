@@ -1,5 +1,5 @@
 /* =====================================================================
-   璃墨 Glass Scholar — Obsidian Theme  (v1.0.3)
+   璃墨 Glass Scholar — Obsidian Theme  (v1.0.4)
    苹果磨砂玻璃质感 · 极简 · 论文级排版
    ---------------------------------------------------------------------
    全界面透明底：纯 CSS 径向渐变光晕（8 种配色）。
@@ -129,9 +129,9 @@ body {
   /* —— 排版 —— */
   --gs-line-height: 1.85;
   --gs-measure: 72;
-  /* —— 玻璃（主面板区透明，仅弹窗/通知保留）—— */
-  --gs-blur: 12;
-  --gs-glass-opacity: 0;
+  /* —— 玻璃（面板区由递归透明块保护，交互 UI 保留玻璃）—— */
+  --gs-blur: 24;
+  --gs-glass-opacity: 0.42;
   /* —— 光晕 —— */
   --gs-glow-blur: 40;
   --gs-glow-opacity: 1;
@@ -174,9 +174,9 @@ body.theme-light {
   --gs-glass-bg:       color-mix(in srgb, #ffffff calc(var(--gs-glass-opacity, 0.42) * 100%), transparent);
   --gs-glass-bg-alt:   color-mix(in srgb, #ffffff calc(var(--gs-glass-opacity, 0.42) * 80%), transparent);
   --gs-glass-border-2: rgba(20, 30, 50, 0.06);
-  --gs-glass-shadow:   inset 0 1px 1px rgba(255,255,255,0.5), 0 6px 18px rgba(31, 48, 90, 0.05);
+  --gs-glass-shadow:   inset 0 0.5px 0 rgba(255,255,255,0.35), 0 4px 16px rgba(31, 48, 90, 0.06);
   --gs-lg-tint: #ffffff;
-  --gs-lg-rim: rgba(255,255,255,0.7);
+  --gs-lg-rim: rgba(255,255,255,0.35);
 
   --gs-code-bg: rgba(20, 30, 50, 0.055);
   --gs-quote-bg: rgba(74, 111, 165, 0.07);
@@ -230,7 +230,7 @@ body.theme-dark {
   --gs-glass-bg:       color-mix(in srgb, #1a202e calc(var(--gs-glass-opacity, 0.42) * 100%), transparent);
   --gs-glass-bg-alt:   color-mix(in srgb, #1a202e calc(var(--gs-glass-opacity, 0.42) * 65%), transparent);
   --gs-glass-border-2: rgba(255, 255, 255, 0.05);
-  --gs-glass-shadow:   inset 0 1px 1px rgba(255,255,255,0.10), 0 6px 18px rgba(0, 0, 0, 0.10);
+  --gs-glass-shadow:   inset 0 0.5px 0 rgba(255,255,255,0.12), 0 4px 16px rgba(0, 0, 0, 0.12);
   --gs-lg-tint: #232a35;
   --gs-lg-rim: rgba(255,255,255,0.16);
 
@@ -422,20 +422,20 @@ body::after {
 /* =====================================================================
    磨砂玻璃 —— 仅弹窗 / 通知 / 悬浮层保留
    ===================================================================== */
-/* 弹窗 & 通知：完整玻璃 */
+/* 弹窗 & 通知：Apple Liquid Glass */
 body .modal-container .modal:not(.x-color-picker-wrapper *),
 body .notice:not(.x-color-picker-wrapper *) {
   background-color: var(--gs-glass-bg);
-  backdrop-filter: blur(var(--gs-blur)) saturate(180%);
-  -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(180%);
+  backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
+  -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
   box-shadow: var(--gs-glass-shadow);
   border: none;
 }
 
 body .status-bar:not(.x-color-picker-wrapper *) {
   background-color: var(--gs-glass-bg-alt);
-  backdrop-filter: blur(var(--gs-blur)) saturate(180%);
-  -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(180%);
+  backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
+  -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
   border: none;
 }
 
@@ -551,21 +551,22 @@ body .workspace-ribbon.mod-left:not(.x-color-picker-wrapper *) {
 
 
 /* =====================================================================
-   液态玻璃 —— 按钮 / 标签 / 交互元素
-   边缘高光 + 内透 + 柔影，不影响背景光晕主题
+   Apple Liquid Glass — 按钮 / 输入框 / 图标交互
+   仅 Obsidian 原生 UI，不碰第三方插件
    ===================================================================== */
 
-/* 输入框/下拉：保持柔和 */
+/* 输入框/下拉：柔和玻璃底 */
 body input[type="text"], body input[type="search"], body input[type="number"], body textarea, body select {
   border-radius: 10px !important;
   border: none !important;
   background: color-mix(in srgb, var(--gs-lg-tint) calc(var(--gs-glass-opacity, 0.42) * 40%), transparent) !important;
-  backdrop-filter: blur(10px) saturate(160%);
-  -webkit-backdrop-filter: blur(10px) saturate(160%);
-  transition: background .15s ease;
+  backdrop-filter: blur(var(--gs-blur)) saturate(1.2);
+  -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(1.2);
+  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.25);
+  transition: background .2s cubic-bezier(.4, 0, .2, 1), box-shadow .2s cubic-bezier(.4, 0, .2, 1);
 }
 
-/* 按钮：只影响 Obsidian 原生按钮，不碰第三方插件 */
+/* 普通按钮：Apple Liquid Glass 风格 */
 .modal button:not(.mod-cta):not(.mod-warning),
 .modal-container button:not(.mod-cta):not(.mod-warning),
 .setting-item button:not(.mod-cta):not(.mod-warning),
@@ -573,14 +574,15 @@ body input[type="text"], body input[type="search"], body input[type="number"], b
 .community-modal button:not(.mod-cta):not(.mod-warning),
 .prompt button:not(.mod-cta):not(.mod-warning),
 .notice button {
-  border-radius: 12px !important;
+  border-radius: 10px !important;
   border: none !important;
   padding: 0.45em 1.1em !important;
-  background: color-mix(in srgb, var(--gs-lg-tint) calc(var(--gs-glass-opacity, 0.42) * 50%), transparent) !important;
-  backdrop-filter: blur(14px) saturate(180%);
-  -webkit-backdrop-filter: blur(14px) saturate(180%);
-  box-shadow: inset 0 1px 0.5px var(--gs-lg-rim) !important;
-  transition: background .22s ease, box-shadow .22s ease, transform .1s ease;
+  font-weight: 500;
+  background: color-mix(in srgb, var(--gs-lg-tint) calc(var(--gs-glass-opacity, 0.42) * 55%), transparent) !important;
+  backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
+  -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
+  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.3);
+  transition: all .2s cubic-bezier(.4, 0, .2, 1);
 }
 .modal button:not(.mod-cta):not(.mod-warning):hover,
 .modal-container button:not(.mod-cta):not(.mod-warning):hover,
@@ -589,8 +591,8 @@ body input[type="text"], body input[type="search"], body input[type="number"], b
 .community-modal button:not(.mod-cta):not(.mod-warning):hover,
 .prompt button:not(.mod-cta):not(.mod-warning):hover,
 .notice button:hover {
-  background: color-mix(in srgb, var(--gs-lg-tint) calc(var(--gs-glass-opacity, 0.42) * 72%), transparent) !important;
-  box-shadow: inset 0 1px 0.5px var(--gs-lg-rim) !important;
+  background: color-mix(in srgb, var(--gs-lg-tint) calc(var(--gs-glass-opacity, 0.42) * 78%), transparent) !important;
+  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.4), 0 2px 8px rgba(0,0,0,0.06);
 }
 .modal button:not(.mod-cta):not(.mod-warning):active,
 .modal-container button:not(.mod-cta):not(.mod-warning):active,
@@ -599,31 +601,44 @@ body input[type="text"], body input[type="search"], body input[type="number"], b
 .community-modal button:not(.mod-cta):not(.mod-warning):active,
 .prompt button:not(.mod-cta):not(.mod-warning):active,
 .notice button:active {
-  transform: scale(0.985);
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.10) !important;
+  background: color-mix(in srgb, var(--gs-lg-tint) calc(var(--gs-glass-opacity, 0.42) * 88%), transparent) !important;
+  transform: translateY(0.5px);
+  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.15);
+  transition-duration: .08s;
 }
 
-/* 主操作按钮：强调色（扁平，仅淡彩晕） */
+/* 主操作按钮：强调色玻璃底（Apple 风格 tint） */
 body button.mod-cta, body .mod-cta {
-  border-radius: 12px !important;
+  border-radius: 10px !important;
   padding: 0.45em 1.2em !important;
-  background: color-mix(in srgb, var(--gs-accent) 85%, transparent) !important;
+  font-weight: 600;
+  background: color-mix(in srgb, var(--gs-accent) 88%, transparent) !important;
   color: #ffffff !important;
   border: none !important;
-  backdrop-filter: blur(10px) saturate(160%);
-  -webkit-backdrop-filter: blur(10px) saturate(160%);
-  box-shadow: inset 0 1px 0.5px rgba(255,255,255,0.3) !important;
+  backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
+  -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
+  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.3);
+  transition: all .2s cubic-bezier(.4, 0, .2, 1);
 }
-body button.mod-cta:hover { background: var(--gs-accent-hover) !important; }
+body button.mod-cta:hover {
+  background: var(--gs-accent-hover) !important;
+  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.35), 0 2px 12px color-mix(in srgb, var(--gs-accent) 25%, transparent);
+}
+body button.mod-cta:active {
+  transform: translateY(0.5px);
+  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.15);
+  transition-duration: .08s;
+}
 
-/* 图标按钮：只影响 Obsidian 原生图标，不碰第三方插件 */
+/* 图标按钮：hover 时显示玻璃浮动效果 */
 .workspace-tab-header .clickable-icon,
 .view-header .clickable-icon,
 .nav-action-button,
 .view-action,
 .sidebar-toggle-button .clickable-icon,
 .workspace-ribbon .clickable-icon {
-  transition: background .2s ease, box-shadow .2s ease;
+  border-radius: 8px;
+  transition: all .2s cubic-bezier(.4, 0, .2, 1);
 }
 .workspace-tab-header .clickable-icon:hover,
 .view-header .clickable-icon:hover,
@@ -631,10 +646,10 @@ body button.mod-cta:hover { background: var(--gs-accent-hover) !important; }
 .view-action:hover,
 .sidebar-toggle-button .clickable-icon:hover,
 .workspace-ribbon .clickable-icon:hover {
-  background: color-mix(in srgb, var(--gs-lg-tint) calc(var(--gs-glass-opacity, 0.42) * 45%), transparent) !important;
-  backdrop-filter: blur(12px) saturate(180%);
-  -webkit-backdrop-filter: blur(12px) saturate(180%);
-  box-shadow: inset 0 1px 0.5px var(--gs-lg-rim) !important;
+  background: color-mix(in srgb, var(--gs-lg-tint) calc(var(--gs-glass-opacity, 0.42) * 50%), transparent) !important;
+  backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
+  -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
+  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.3);
 }
 
 
@@ -767,11 +782,11 @@ a.tag, .tag { font-size: 0.82em; font-family: var(--font-interface-theme); backg
 .menu:not(.x-color-picker-wrapper *),
 .popover:not(.x-color-picker-wrapper *) { border-radius: 16px; padding: 6px; border: none; }
 
-/* Obsidian 原生弹窗：玻璃效果（不碰颜色选择器） */
+/* Obsidian 原生弹窗：Apple Liquid Glass */
 .popover:not(.x-color-picker-wrapper *) {
   background-color: var(--gs-glass-bg);
-  backdrop-filter: blur(var(--gs-blur)) saturate(180%);
-  -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(180%);
+  backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
+  -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
   box-shadow: var(--gs-glass-shadow);
 }
 .menu, .dropdown-menu {
@@ -803,9 +818,9 @@ body [class*="claudian-"][class*="modal"]:not(.x-color-picker-wrapper):not(.x-co
 body [class*="claudian-"][class*="popover"]:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
 body .claudian-thinking-options:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *) {
   background-color: color-mix(in srgb, var(--gs-lg-tint) 94%, transparent) !important;
-  backdrop-filter: blur(36px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(36px) saturate(180%) !important;
-  box-shadow: 0 18px 52px rgba(0,0,0,0.24), inset 0 1px 1px var(--gs-lg-rim) !important;
+  backdrop-filter: blur(36px) saturate(1.5) !important;
+  -webkit-backdrop-filter: blur(36px) saturate(1.5) !important;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.18), inset 0 0.5px 0 var(--gs-lg-rim) !important;
 }
 
 /* 弹层与设置页内表单控件：文字用主题前景、背景用表单字段色，避免变量泄漏导致白底白字 */
@@ -1099,8 +1114,8 @@ body.gs-autohide-ui .workspace-ribbon::before {
 body.gs-autohide-ui .workspace-ribbon:hover {
   width: var(--ribbon-width, 48px) !important;
   opacity: 1;
-  backdrop-filter: blur(var(--gs-blur)) saturate(180%);
-  -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(180%);
+  backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
+  -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
 }
 
 @media (max-width: 768px) {
