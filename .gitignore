@@ -1,0 +1,9 @@
+node_modules/
+.agent/
+.claude/
+AGENTS.md
+CLAUDE.md
+pnpm-lock.yaml
+pnpm-workspace.yaml
+wallpaper*.svg
+.playwright-mcp/
