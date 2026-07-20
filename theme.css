@@ -765,7 +765,6 @@ a.tag, .tag { font-size: 0.82em; font-family: var(--font-interface-theme); backg
    ===================================================================== */
 .modal-container .modal:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *) { border-radius: 20px; overflow: hidden; border: none; }
 .menu:not(.x-color-picker-wrapper *),
-.suggestion-container:not(.x-color-picker-wrapper *),
 .popover:not(.x-color-picker-wrapper *) { border-radius: 16px; padding: 6px; border: none; }
 
 /* Obsidian 原生弹窗：玻璃效果（不碰颜色选择器） */
@@ -775,7 +774,7 @@ a.tag, .tag { font-size: 0.82em; font-family: var(--font-interface-theme); backg
   -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(180%);
   box-shadow: var(--gs-glass-shadow);
 }
-.menu, .suggestion-container, .dropdown-menu {
+.menu, .dropdown-menu {
   background-color: var(--background-primary);
 }
 
@@ -791,24 +790,13 @@ a.tag, .tag { font-size: 0.82em; font-family: var(--font-interface-theme); backg
   -webkit-backdrop-filter: none;
 }
 
-/* 交互弹层：足够不透明 + 强模糊，避免与底部内容重叠
-   同时锁死文字/背景色变量，防止弹层内表单控件出现"白底白字"
-   排除颜色选择器及其内部所有元素 */
+/* 交互弹层：足够不透明 + 强模糊，排除颜色选择器 */
 body .modal-container .modal:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
 body .hover-popover:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
 body .suggestion-container:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
 body .prompt:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
 body .multi-select-menu:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
-body .claudian-mention-dropdown:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
-body .claudian-mention-dropdown-fixed:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
-body .claudian-slash-dropdown:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
-body .claudian-slash-dropdown-fixed:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
-body .claudian-model-dropdown:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
-body .claudian-mcp-selector-dropdown:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
-body .claudian-mcp-add-dropdown:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
-body .claudian-resume-dropdown:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
-body .claudian-history-menu:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
-body .claudian-external-context-dropdown:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
+/* Claudian 全系列插件弹窗（通配符覆盖所有变体）*/
 body [class*="claudian-"][class*="dropdown"]:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
 body [class*="claudian-"][class*="menu"]:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
 body [class*="claudian-"][class*="modal"]:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
