@@ -1,6 +1,10 @@
-# 璃墨 Glass Scholar
+# Glass Scholar · 璃墨
 
 [![GitHub release](https://img.shields.io/github/v/release/sidny1988/glass-scholar)](https://github.com/sidny1988/glass-scholar/releases)
+
+**A frosted-glass Obsidian theme** — fully transparent glow interface with minimal design and academic-grade typography.
+
+> Apple Vision Pro-inspired transparency: vibrant CSS radial-gradient glows shine through every panel. No borders, no boundaries, no isolation. One continuous sheet of glass.
 
 **Obsidian 磨砂玻璃主题** — 全透明光晕界面 · 极简 · 论文级排版。
 
