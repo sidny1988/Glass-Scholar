@@ -797,30 +797,31 @@ a.tag, .tag { font-size: 0.82em; font-family: var(--font-interface-theme); backg
 
 /* Obsidian 原生弹窗：Apple Liquid Glass */
 .popover:not(.x-color-picker-wrapper *) {
-  background-color: var(--gs-glass-bg);
-  backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
-  -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
-  box-shadow: var(--gs-glass-shadow);
+  background-color: var(--gs-glass-bg) !important;
+  backdrop-filter: blur(var(--gs-blur)) saturate(1.5) !important;
+  -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(1.5) !important;
+  box-shadow: var(--gs-glass-shadow) !important;
 }
 
 /* 命令面板 / 建议容器 / 悬浮预览：通透磨砂 */
 .prompt:not(.x-color-picker-wrapper *),
 .suggestion-container:not(.x-color-picker-wrapper *),
 .hover-popover:not(.x-color-picker-wrapper *) {
-  background-color: color-mix(in srgb, var(--gs-lg-tint) 82%, transparent);
-  backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
-  -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.10), inset 0 0.5px 0 rgba(255,255,255,0.2);
-  border-radius: 14px;
-  border: none;
+  background-color: color-mix(in srgb, var(--gs-lg-tint) 82%, transparent) !important;
+  backdrop-filter: blur(var(--gs-blur)) saturate(1.5) !important;
+  -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(1.5) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10), inset 0 0.5px 0 rgba(255,255,255,0.2) !important;
+  border-radius: 14px !important;
+  border: none !important;
 }
-.menu, .dropdown-menu {
-  background-color: color-mix(in srgb, var(--gs-lg-tint) 85%, transparent);
-  backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
-  -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-  border-radius: 12px;
-  border: none;
+.menu:not(.x-color-picker-wrapper *),
+.dropdown-menu:not(.x-color-picker-wrapper *) {
+  background-color: color-mix(in srgb, var(--gs-lg-tint) 85%, transparent) !important;
+  backdrop-filter: blur(var(--gs-blur)) saturate(1.5) !important;
+  -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(1.5) !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08) !important;
+  border-radius: 12px !important;
+  border: none !important;
 }
 
 /* 设置面板/弹窗中的菜单：不透明背景，确保可读 */
@@ -894,10 +895,7 @@ body.theme-dark .style-settings-container select { color-scheme: dark; }
 .mod-settings .setting-item-name,
 .mod-settings .setting-item-description { color: var(--text-normal); }
 body.theme-dark .modal-container .modal .setting-item:not(.mod-toggle):hover,
-body.theme-dark .mod-settings .setting-item:not(.mod-toggle):hover,
-body.theme-dark .popover:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
-body.theme-dark .menu:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
-body.theme-dark .suggestion-container:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *) {
+body.theme-dark .mod-settings .setting-item:not(.mod-toggle):hover {
   background-color: var(--background-secondary);
 }
 
@@ -925,10 +923,10 @@ body.theme-dark .suggestion-container:not(.x-color-picker-wrapper):not(.x-color-
 body.theme-dark .menu,
 body.theme-dark .popover,
 body.theme-dark .suggestion-container,
-body.theme-dark .modal-container .modal,
-body.theme-dark .mod-settings,
 body.theme-dark .dropdown-menu,
-body.theme-dark .multi-select-menu { color: #e6eaf2 !important; background-color: #16191e !important; }
+body.theme-dark .multi-select-menu { color: #e6eaf2 !important; }
+body.theme-dark .modal-container .modal,
+body.theme-dark .mod-settings { color: #e6eaf2 !important; background-color: #16191e !important; }
 
 body.theme-dark .suggestion-item,
 body.theme-dark .suggestion-item .suggestion-title,
@@ -963,10 +961,10 @@ body.theme-dark .mod-settings button:not(.mod-cta):not(.mod-warning) {
 body.theme-light .menu,
 body.theme-light .popover,
 body.theme-light .suggestion-container,
-body.theme-light .modal-container .modal,
-body.theme-light .mod-settings,
 body.theme-light .dropdown-menu,
-body.theme-light .multi-select-menu { color: #1c2230 !important; background-color: #ffffff !important; }
+body.theme-light .multi-select-menu { color: #1c2230 !important; }
+body.theme-light .modal-container .modal,
+body.theme-light .mod-settings { color: #1c2230 !important; background-color: #ffffff !important; }
 body.theme-light .suggestion-item,
 body.theme-light .suggestion-item .suggestion-title,
 body.theme-light .suggestion-item .suggestion-content { color: #1c2230 !important; background: transparent !important; }
