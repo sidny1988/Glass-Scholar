@@ -1,5 +1,5 @@
 /* =====================================================================
-   璃墨 Glass Scholar — Obsidian Theme  (v1.0.5)
+   璃墨 Glass Scholar — Obsidian Theme  (v1.1.0)
    苹果磨砂玻璃质感 · 极简 · 论文级排版
    ---------------------------------------------------------------------
    全界面透明底：纯 CSS 径向渐变光晕（8 种配色）。
@@ -175,6 +175,7 @@ body.theme-light {
   --gs-glass-bg-alt:   color-mix(in srgb, #ffffff calc(var(--gs-glass-opacity, 0.42) * 80%), transparent);
   --gs-glass-border-2: rgba(20, 30, 50, 0.06);
   --gs-glass-shadow:   inset 0 0.5px 0 rgba(255,255,255,0.35), 0 4px 16px rgba(31, 48, 90, 0.06);
+  --gs-popup-shadow:   0 12px 40px rgba(0,0,0,0.10), inset 0 0 0 0.5px rgba(255,255,255,0.4), inset 0 1px 0 rgba(255,255,255,0.6), 0 0 60px color-mix(in srgb, var(--gs-glow-1) 15%, transparent), inset 0 0 40px color-mix(in srgb, var(--gs-glow-1) 10%, transparent);
   --gs-lg-tint: #ffffff;
   --gs-lg-rim: rgba(255,255,255,0.35);
 
@@ -191,7 +192,7 @@ body.theme-light {
   --background-modifier-border-hover:  rgba(20, 30, 50, 0.16);
   --background-modifier-border-focus:  var(--gs-accent, #4a6fa5);
   --background-modifier-form-field:    #ffffff;
-  --background-modifier-cover:         rgba(244, 246, 250, 0.85);
+  --background-modifier-cover:         rgba(244, 246, 250, 0.50);
   --background-modifier-hover:         rgba(74, 111, 165, 0.08);
 
   --text-normal:  var(--gs-text);
@@ -231,6 +232,7 @@ body.theme-dark {
   --gs-glass-bg-alt:   color-mix(in srgb, #1a202e calc(var(--gs-glass-opacity, 0.42) * 65%), transparent);
   --gs-glass-border-2: rgba(255, 255, 255, 0.05);
   --gs-glass-shadow:   inset 0 0.5px 0 rgba(255,255,255,0.12), 0 4px 16px rgba(0, 0, 0, 0.12);
+  --gs-popup-shadow:   0 8px 32px rgba(0,0,0,0.30), inset 0 0 0 0.5px rgba(255,255,255,0.10), inset 0 0.5px 0 rgba(255,255,255,0.18), 0 0 80px color-mix(in srgb, var(--gs-glow-1) 20%, transparent), inset 0 0 50px color-mix(in srgb, var(--gs-glow-1) 12%, transparent);
   --gs-lg-tint: #232a35;
   --gs-lg-rim: rgba(255,255,255,0.16);
 
@@ -247,7 +249,7 @@ body.theme-dark {
   --background-modifier-border-hover:  rgba(255, 255, 255, 0.18);
   --background-modifier-border-focus:  var(--gs-accent, #7aa2d6);
   --background-modifier-form-field:    #20242c;
-  --background-modifier-cover:         rgba(18, 20, 25, 0.85);
+  --background-modifier-cover:         rgba(18, 20, 25, 0.65);
   --background-modifier-hover:         rgba(122, 162, 214, 0.12);
 
   --text-normal:  var(--gs-text);
@@ -482,25 +484,45 @@ body .workspace-ribbon.mod-left:not(.x-color-picker-wrapper *) {
   -webkit-backdrop-filter: none !important;
   box-shadow: none !important;
 }
-.workspace-tab-header { border-radius: 8px; margin: 0; padding: 4px 10px; transition: background .2s ease; }
-.workspace-tab-header:hover {
-  background: color-mix(in srgb, var(--gs-lg-tint) calc(var(--gs-glass-opacity, 0.42) * 32%), transparent);
+.workspace-tab-header { border-radius: 8px; margin: 0; padding: 4px 10px; transition: all 0.2s cubic-bezier(0.2, 0.0, 0.0, 1.0); }
+body.theme-light .workspace-tab-header:hover { background: rgba(0,0,0,0.04); }
+body.theme-dark .workspace-tab-header:hover { background: rgba(255,255,255,0.06); }
+body.theme-light .workspace-tab-header.is-active {
+  background: rgba(0,0,0,0.07);
+  backdrop-filter: blur(12px) saturate(1.5);
+  -webkit-backdrop-filter: blur(12px) saturate(1.5);
+  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.4);
 }
-.workspace-tab-header.is-active {
-  background: color-mix(in srgb, var(--gs-lg-tint) calc(var(--gs-glass-opacity, 0.42) * 72%), transparent);
+body.theme-dark .workspace-tab-header.is-active {
+  background: rgba(255,255,255,0.09);
+  backdrop-filter: blur(14px) saturate(1.5);
+  -webkit-backdrop-filter: blur(14px) saturate(1.5);
+  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.12);
 }
 .workspace-tab-header.is-active .workspace-tab-header-inner { background: transparent; }
 .workspace-tab-header-inner { border-radius: 8px; gap: 6px; }
 .workspace-tab-header-inner-title { font-weight: 500; }
-.workspace-tab-header-inner-icon { color: var(--gs-text-muted); transition: color .15s ease; }
-.workspace-tab-header.is-active .workspace-tab-header-inner-icon { color: var(--gs-text); }
+.workspace-tab-header-inner-icon {
+  color: var(--gs-text-muted);
+  transition: all 0.2s cubic-bezier(0.2, 0.0, 0.0, 1.0);
+  border-radius: 6px;
+  padding: 3px;
+}
+.workspace-tab-header-inner-icon:hover {
+  color: var(--gs-text);
+  transform: scale(1.10);
+}
+.workspace-tab-header.is-active .workspace-tab-header-inner-icon { color: var(--gs-text); transform: scale(1.06); }
 .workspace-tab-header .workspace-tab-header-inner-close {
   border-radius: 6px;
-  transition: background .15s ease, color .15s ease;
+  padding: 3px;
+  transition: all 0.2s cubic-bezier(0.2, 0.0, 0.0, 1.0);
+  color: var(--gs-text-muted);
 }
 .workspace-tab-header .workspace-tab-header-inner-close:hover {
   background: var(--background-modifier-hover);
   color: var(--gs-accent);
+  transform: scale(1.12);
 }
 
 /* 视图标题栏：无分割线无阴影，与上下内容完全融合 */
@@ -538,10 +560,32 @@ body .workspace-ribbon.mod-left:not(.x-color-picker-wrapper *) {
 /* 状态栏：融合底条，弱存在感 */
 .status-bar { margin: 0; border-radius: 0; border: none !important; padding: 0 12px; font-size: var(--font-ui-smaller); box-shadow: none; background: transparent; }
 
-.tree-item-self.is-clickable:hover,
-.nav-file-title:hover, .nav-folder-title:hover, .nav-file-title.is-active {
-  background: color-mix(in srgb, var(--gs-lg-tint) calc(var(--gs-glass-opacity, 0.42) * 42%), transparent);
+/* 侧边栏文件/文件夹项：Apple Liquid Glass hover */
+body.theme-light .tree-item-self.is-clickable:hover,
+body.theme-light .nav-file-title:hover,
+body.theme-light .nav-folder-title:hover {
+  background: rgba(0,0,0,0.05);
+  backdrop-filter: blur(10px) saturate(1.4);
+  -webkit-backdrop-filter: blur(10px) saturate(1.4);
+  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.4);
   border-radius: 9px;
+  color: var(--gs-text);
+}
+body.theme-dark .tree-item-self.is-clickable:hover,
+body.theme-dark .nav-file-title:hover,
+body.theme-dark .nav-folder-title:hover {
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(12px) saturate(1.4);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.12);
+  border-radius: 9px;
+  color: var(--gs-text);
+}
+.nav-file-title.is-active {
+  background: color-mix(in srgb, var(--gs-accent) 14%, transparent);
+  border-radius: 9px;
+  color: var(--gs-accent);
+  font-weight: 600;
 }
 
 ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -630,52 +674,168 @@ body button.mod-cta:active {
   transition-duration: .08s;
 }
 
-/* 图标按钮：Apple 风格，hover 浮起 */
+/* =====================================================================
+   Apple Liquid Glass 图标交互
+
+   真实 Obsidian DOM 类名（已验证）：
+   - .clickable-icon → view-header / ribbon / status-bar / tab-header 内
+   - .nav-action-button → 文件导航栏顶部操作按钮
+   - .tree-item-icon → 侧栏文件夹折叠箭头
+   - .nav-file-title/.nav-folder-title → 文件/文件夹条目行
+   - .nn-navigation-calendar-nav-button → NN 日历导航 < >
+   - .nn-navigation-calendar-period-button → NN 周期切换
+   - .nn-navigation-calendar-quarter-button → NN 季度切换
+   - .nn-icon-button → NN 通用图标按钮
+   - .nn-navitem-chevron → NN 导航树折叠箭头
+   - .nn-navitem-hover-action-button → NN 条目 hover 操作按钮
+
+   排除：.claudian-* / .x-color-picker* / 其它第三方插件
+   ===================================================================== */
+
+/* ── 通用默认态 ── */
 .workspace-tab-header .clickable-icon,
 .view-header .clickable-icon,
 .nav-action-button,
 .view-action,
 .sidebar-toggle-button .clickable-icon,
-.workspace-ribbon .clickable-icon {
-  border-radius: 10px;
-  padding: 4px;
+.workspace-ribbon .clickable-icon,
+.status-bar .clickable-icon,
+.nav-header .clickable-icon,
+.titlebar-button,
+.graph-controls .clickable-icon,
+.tree-item-icon,
+.nn-navigation-calendar-nav-button,
+.nn-navigation-calendar-period-button,
+.nn-navigation-calendar-quarter-button,
+.nn-icon-button,
+.nn-navitem-chevron,
+.nn-navitem-hover-action-button {
+  border-radius: 8px;
+  padding: 5px;
   color: var(--gs-text-muted);
-  transition: all .25s cubic-bezier(.4, 0, .2, 1);
+  background: transparent !important;
+  border: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  transform: none;
+  transition: all 0.2s cubic-bezier(0.2, 0.0, 0.0, 1.0);
 }
-.workspace-tab-header .clickable-icon:hover,
-.view-header .clickable-icon:hover,
-.nav-action-button:hover,
-.view-action:hover,
-.sidebar-toggle-button .clickable-icon:hover,
-.workspace-ribbon .clickable-icon:hover {
-  background: color-mix(in srgb, var(--gs-lg-tint) calc(var(--gs-glass-opacity, 0.42) * 55%), transparent) !important;
-  backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
-  -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
-  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(0,0,0,0.05);
-  color: var(--gs-text);
+.tree-item-icon { padding: 4px; }
+.titlebar-button { border-radius: 6px; padding: 0; }
+.nn-icon-button { padding: 4px 6px; }
+
+/* ── 浅色 hover ── */
+body.theme-light .workspace-tab-header .clickable-icon:hover,
+body.theme-light .view-header .clickable-icon:hover,
+body.theme-light .nav-action-button:hover,
+body.theme-light .view-action:hover,
+body.theme-light .sidebar-toggle-button .clickable-icon:hover,
+body.theme-light .workspace-ribbon .clickable-icon:hover,
+body.theme-light .status-bar .clickable-icon:hover,
+body.theme-light .nav-header .clickable-icon:hover,
+body.theme-light .titlebar-button:hover,
+body.theme-light .graph-controls .clickable-icon:hover,
+body.theme-light .tree-item-icon:hover,
+body.theme-light .nn-navigation-calendar-nav-button:hover,
+body.theme-light .nn-navigation-calendar-period-button:hover,
+body.theme-light .nn-navigation-calendar-quarter-button:hover,
+body.theme-light .nn-icon-button:hover,
+body.theme-light .nn-navitem-chevron:hover,
+body.theme-light .nn-navitem-hover-action-button:hover {
+  background: rgba(0,0,0,0.055) !important;
+  backdrop-filter: blur(12px) saturate(1.5) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(1.5) !important;
+  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.5), 0 1px 3px rgba(0,0,0,0.04) !important;
+  color: var(--gs-text) !important;
+  transform: scale(1.08);
 }
+
+/* ── 深色 hover ── */
+body.theme-dark .workspace-tab-header .clickable-icon:hover,
+body.theme-dark .view-header .clickable-icon:hover,
+body.theme-dark .nav-action-button:hover,
+body.theme-dark .view-action:hover,
+body.theme-dark .sidebar-toggle-button .clickable-icon:hover,
+body.theme-dark .workspace-ribbon .clickable-icon:hover,
+body.theme-dark .status-bar .clickable-icon:hover,
+body.theme-dark .nav-header .clickable-icon:hover,
+body.theme-dark .titlebar-button:hover,
+body.theme-dark .graph-controls .clickable-icon:hover,
+body.theme-dark .tree-item-icon:hover,
+body.theme-dark .nn-navigation-calendar-nav-button:hover,
+body.theme-dark .nn-navigation-calendar-period-button:hover,
+body.theme-dark .nn-navigation-calendar-quarter-button:hover,
+body.theme-dark .nn-icon-button:hover,
+body.theme-dark .nn-navitem-chevron:hover,
+body.theme-dark .nn-navitem-hover-action-button:hover {
+  background: rgba(255,255,255,0.085) !important;
+  backdrop-filter: blur(14px) saturate(1.5) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(1.5) !important;
+  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.14), 0 1px 4px rgba(0,0,0,0.12) !important;
+  color: var(--gs-text) !important;
+  transform: scale(1.08);
+}
+
+/* ── active ── */
 .workspace-tab-header .clickable-icon:active,
 .view-header .clickable-icon:active,
 .nav-action-button:active,
 .view-action:active,
 .sidebar-toggle-button .clickable-icon:active,
-.workspace-ribbon .clickable-icon:active {
-  transform: translateY(0.5px);
-  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.15);
-  transition-duration: .08s;
+.workspace-ribbon .clickable-icon:active,
+.status-bar .clickable-icon:active,
+.nav-header .clickable-icon:active,
+.titlebar-button:active,
+.graph-controls .clickable-icon:active,
+.tree-item-icon:active,
+.nn-navigation-calendar-nav-button:active,
+.nn-navigation-calendar-period-button:active,
+.nn-navigation-calendar-quarter-button:active,
+.nn-icon-button:active,
+.nn-navitem-chevron:active,
+.nn-navitem-hover-action-button:active {
+  background: color-mix(in srgb, var(--gs-lg-tint) 48%, transparent) !important;
+  transform: scale(1.0) translateY(0.5px);
+  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.12) !important;
+  transition-duration: 0.06s;
 }
 
 
 /* =====================================================================
-   Notebook Navigator 日历：扁平、无圆角、去果冻玻璃
+   知识图谱：深色模式线条提亮优化
    ===================================================================== */
+body.theme-dark .graph-view.color-line {
+  color: rgba(180, 195, 220, 0.28);
+}
+body.theme-dark .graph-view.color-line-highlight {
+  color: rgba(210, 220, 240, 0.55);
+}
+body.theme-dark .graph-view.color-fill-highlight {
+  color: var(--gs-accent, #7aa2d6);
+}
+body.theme-dark .graph-view.color-arrow {
+  color: rgba(180, 195, 220, 0.35);
+}
+/* 未解析链接节点：微暖色提醒 */
+body.theme-dark .graph-view.color-fill-unresolved {
+  color: rgba(210, 185, 185, 0.45);
+}
+/* 浅色模式：线条微加深 */
+body.theme-light .graph-view.color-line {
+  color: rgba(80, 100, 130, 0.22);
+}
+body.theme-light .graph-view.color-line-highlight {
+  color: rgba(50, 70, 100, 0.45);
+}
+/* 图谱控制面板按钮（已在上方图标交互区块中覆盖） */
+
+/* =====================================================================
+   Notebook Navigator 日历：Apple 风格交互
+   ===================================================================== */
+/* 日历格子：干净无背景，保留 hover 高亮 */
 .nn-navigation-calendar-day-cell,
-.nn-navigation-calendar-day-number,
-.nn-navigation-calendar-today,
-.nn-navigation-calendar-day-cell.is-today,
-.nn-navigation-calendar-period-button,
-.nn-navigation-calendar-nav-button,
-.nn-navigation-calendar-quarter-button {
+.nn-navigation-calendar-day-number {
   background: transparent !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
@@ -685,12 +845,22 @@ body button.mod-cta:active {
 }
 .nn-navigation-calendar-day-cell:hover {
   background: var(--background-modifier-hover) !important;
+  border-radius: 8px;
 }
+/* 今日标记 */
 .nn-navigation-calendar-today,
 .nn-navigation-calendar-day-cell.is-today {
   background: var(--gs-accent) !important;
   color: var(--text-on-accent) !important;
   font-weight: 700;
+  border-radius: 8px;
+}
+/* 日历导航/周期/季度按钮：Apple Liquid Glass 交互（已在图标按钮区块定义，此处仅做圆角增强） */
+.nn-navigation-calendar-nav-button,
+.nn-navigation-calendar-period-button,
+.nn-navigation-calendar-quarter-button {
+  border-radius: 8px !important;
+  border: none !important;
 }
 .nn-navigation-calendar-day-cell.is-outside-month,
 .nn-navigation-calendar-day-cell .is-outside-month {
@@ -795,33 +965,173 @@ a.tag, .tag { font-size: 0.82em; font-family: var(--font-interface-theme); backg
 .menu:not(.x-color-picker-wrapper *),
 .popover:not(.x-color-picker-wrapper *) { border-radius: 16px; padding: 6px; border: none; }
 
-/* Obsidian 原生弹窗：Apple Liquid Glass */
-.popover:not(.x-color-picker-wrapper *) {
-  background-color: var(--gs-glass-bg) !important;
-  backdrop-filter: blur(var(--gs-blur)) saturate(1.5) !important;
-  -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(1.5) !important;
-  box-shadow: var(--gs-glass-shadow) !important;
+/*
+   Apple Liquid Glass 弹窗磨砂 —— 自包含微型光晕方案
+   ====================================================
+   创新点：弹窗自带径向渐变微型光晕（使用 --gs-glow-* 颜色变量），
+   不依赖 backdrop-filter 采样背后的 body::before 光晕。
+
+   栈叠结构（每层弹窗的 background）：
+     层1: 微型光晕1 — 径向渐变，颜色来自 --gs-glow-1
+     层2: 微型光晕2 — 径向渐变，颜色来自 --gs-glow-2/3
+     层3: 实色基底 — 高不透明度兜底
+     层4: SVG 噪点 — 模拟磨砂玻璃颗粒
+   backdrop-filter: 仅作辅助深度（32px 稳定值）
+   box-shadow: 虹吸霓虹边缘光
+
+   性能：光晕渐变在弹窗本地渲染，不受 body::before 光晕强度影响。
+*/
+/* —— 浅色模式弹窗 —— */
+body.theme-light .popover:not(.x-color-picker-wrapper *) {
+	background:
+		radial-gradient(ellipse 50% 50% at 10% 8%, color-mix(in srgb, var(--gs-glow-1) 12%, transparent) 0%, transparent 78%),
+		radial-gradient(ellipse 50% 50% at 90% 8%, color-mix(in srgb, var(--gs-glow-2) 8%, transparent) 0%, transparent 78%),
+		radial-gradient(ellipse 50% 50% at 90% 92%, color-mix(in srgb, var(--gs-glow-3) 9%, transparent) 0%, transparent 78%),
+		radial-gradient(ellipse 50% 50% at 10% 92%, color-mix(in srgb, var(--gs-glow-4) 7%, transparent) 0%, transparent 78%),
+		radial-gradient(ellipse 90% 90% at 50% 50%, color-mix(in srgb, var(--gs-glow-1) 4%, transparent) 0%, transparent 70%),
+		linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(248,250,254,0.28) 100%),
+		url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E") !important;
+	backdrop-filter: blur(32px) saturate(1.8) !important;
+	-webkit-backdrop-filter: blur(32px) saturate(1.8) !important;
+	box-shadow: var(--gs-popup-shadow) !important;
+}
+body.theme-light .prompt:not(.x-color-picker-wrapper *),
+body.theme-light .suggestion-container:not(.x-color-picker-wrapper *),
+body.theme-light .hover-popover:not(.x-color-picker-wrapper *) {
+	background:
+		radial-gradient(ellipse 50% 50% at 10% 8%, color-mix(in srgb, var(--gs-glow-1) 12%, transparent) 0%, transparent 78%),
+		radial-gradient(ellipse 50% 50% at 90% 8%, color-mix(in srgb, var(--gs-glow-2) 8%, transparent) 0%, transparent 78%),
+		radial-gradient(ellipse 50% 50% at 90% 92%, color-mix(in srgb, var(--gs-glow-3) 9%, transparent) 0%, transparent 78%),
+		radial-gradient(ellipse 50% 50% at 10% 92%, color-mix(in srgb, var(--gs-glow-4) 7%, transparent) 0%, transparent 78%),
+		radial-gradient(ellipse 90% 90% at 50% 50%, color-mix(in srgb, var(--gs-glow-1) 4%, transparent) 0%, transparent 70%),
+		linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(248,250,254,0.28) 100%),
+		url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E") !important;
+	backdrop-filter: blur(32px) saturate(1.8) !important;
+	-webkit-backdrop-filter: blur(32px) saturate(1.8) !important;
+	box-shadow: var(--gs-popup-shadow) !important;
+	border-radius: 14px !important;
+	border: none !important;
+}
+body.theme-light .menu:not(.x-color-picker-wrapper *),
+body.theme-light .dropdown-menu:not(.x-color-picker-wrapper *) {
+	background:
+		radial-gradient(ellipse 45% 45% at 10% 8%, color-mix(in srgb, var(--gs-glow-1) 10%, transparent) 0%, transparent 76%),
+		radial-gradient(ellipse 45% 45% at 90% 8%, color-mix(in srgb, var(--gs-glow-2) 6%, transparent) 0%, transparent 76%),
+		radial-gradient(ellipse 45% 45% at 90% 92%, color-mix(in srgb, var(--gs-glow-3) 7%, transparent) 0%, transparent 76%),
+		radial-gradient(ellipse 45% 45% at 10% 92%, color-mix(in srgb, var(--gs-glow-4) 5%, transparent) 0%, transparent 76%),
+		radial-gradient(ellipse 85% 85% at 50% 50%, color-mix(in srgb, var(--gs-glow-1) 3%, transparent) 0%, transparent 68%),
+		linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(248,250,254,0.28) 100%),
+		url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E") !important;
+	backdrop-filter: blur(32px) saturate(1.8) !important;
+	-webkit-backdrop-filter: blur(32px) saturate(1.8) !important;
+	box-shadow: var(--gs-popup-shadow) !important;
+	border-radius: 12px !important;
+	border: none !important;
 }
 
-/* 命令面板 / 建议容器 / 悬浮预览：通透磨砂 */
-.prompt:not(.x-color-picker-wrapper *),
-.suggestion-container:not(.x-color-picker-wrapper *),
-.hover-popover:not(.x-color-picker-wrapper *) {
-  background-color: color-mix(in srgb, var(--gs-lg-tint) 82%, transparent) !important;
-  backdrop-filter: blur(var(--gs-blur)) saturate(1.5) !important;
-  -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(1.5) !important;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.10), inset 0 0.5px 0 rgba(255,255,255,0.2) !important;
+/* —— 深色模式弹窗 —— */
+body.theme-dark .popover:not(.x-color-picker-wrapper *) {
+  background:
+    radial-gradient(ellipse 55% 55% at 10% 8%, color-mix(in srgb, var(--gs-glow-1) 35%, transparent) 0%, transparent 75%),
+    radial-gradient(ellipse 55% 55% at 90% 8%, color-mix(in srgb, var(--gs-glow-2) 28%, transparent) 0%, transparent 75%),
+    radial-gradient(ellipse 55% 55% at 90% 92%, color-mix(in srgb, var(--gs-glow-3) 26%, transparent) 0%, transparent 75%),
+    radial-gradient(ellipse 55% 55% at 10% 92%, color-mix(in srgb, var(--gs-glow-4) 24%, transparent) 0%, transparent 75%),
+    radial-gradient(ellipse 90% 90% at 50% 50%, color-mix(in srgb, var(--gs-glow-1) 10%, transparent) 0%, transparent 65%),
+    linear-gradient(180deg, rgba(40,46,60,0.85) 0%, rgba(24,28,38,0.85) 100%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E") !important;
+  backdrop-filter: blur(48px) saturate(2) brightness(2.2) !important;
+  -webkit-backdrop-filter: blur(48px) saturate(2) brightness(2.2) !important;
+  box-shadow: var(--gs-popup-shadow) !important;
+}
+body.theme-dark .prompt:not(.x-color-picker-wrapper *),
+body.theme-dark .suggestion-container:not(.x-color-picker-wrapper *),
+body.theme-dark .hover-popover:not(.x-color-picker-wrapper *) {
+  background:
+    radial-gradient(ellipse 55% 55% at 10% 8%, color-mix(in srgb, var(--gs-glow-1) 35%, transparent) 0%, transparent 75%),
+    radial-gradient(ellipse 55% 55% at 90% 8%, color-mix(in srgb, var(--gs-glow-2) 28%, transparent) 0%, transparent 75%),
+    radial-gradient(ellipse 55% 55% at 90% 92%, color-mix(in srgb, var(--gs-glow-3) 26%, transparent) 0%, transparent 75%),
+    radial-gradient(ellipse 55% 55% at 10% 92%, color-mix(in srgb, var(--gs-glow-4) 24%, transparent) 0%, transparent 75%),
+    radial-gradient(ellipse 90% 90% at 50% 50%, color-mix(in srgb, var(--gs-glow-1) 10%, transparent) 0%, transparent 65%),
+    linear-gradient(180deg, rgba(40,46,60,0.85) 0%, rgba(24,28,38,0.85) 100%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E") !important;
+  backdrop-filter: blur(48px) saturate(2) brightness(2.2) !important;
+  -webkit-backdrop-filter: blur(48px) saturate(2) brightness(2.2) !important;
+  box-shadow: var(--gs-popup-shadow) !important;
   border-radius: 14px !important;
   border: none !important;
 }
-.menu:not(.x-color-picker-wrapper *),
-.dropdown-menu:not(.x-color-picker-wrapper *) {
-  background-color: color-mix(in srgb, var(--gs-lg-tint) 85%, transparent) !important;
-  backdrop-filter: blur(var(--gs-blur)) saturate(1.5) !important;
-  -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(1.5) !important;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08) !important;
+body.theme-dark .menu:not(.x-color-picker-wrapper *),
+body.theme-dark .dropdown-menu:not(.x-color-picker-wrapper *) {
+  background:
+    radial-gradient(ellipse 50% 50% at 10% 8%, color-mix(in srgb, var(--gs-glow-1) 30%, transparent) 0%, transparent 73%),
+    radial-gradient(ellipse 50% 50% at 90% 8%, color-mix(in srgb, var(--gs-glow-2) 24%, transparent) 0%, transparent 73%),
+    radial-gradient(ellipse 50% 50% at 90% 92%, color-mix(in srgb, var(--gs-glow-3) 20%, transparent) 0%, transparent 73%),
+    radial-gradient(ellipse 50% 50% at 10% 92%, color-mix(in srgb, var(--gs-glow-4) 18%, transparent) 0%, transparent 73%),
+    radial-gradient(ellipse 85% 85% at 50% 50%, color-mix(in srgb, var(--gs-glow-1) 8%, transparent) 0%, transparent 63%),
+    linear-gradient(180deg, rgba(40,46,60,0.85) 0%, rgba(24,28,38,0.85) 100%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E") !important;
+  backdrop-filter: blur(48px) saturate(2) brightness(2.2) !important;
+  -webkit-backdrop-filter: blur(48px) saturate(2) brightness(2.2) !important;
+  box-shadow: var(--gs-popup-shadow) !important;
   border-radius: 12px !important;
   border: none !important;
+}
+
+
+/* 弹窗内部子元素背景全固化：防止继承 :root 的 transparent 变量导致透底
+   覆盖所有 Obsidian 弹窗容器类型（popover / prompt / suggestion / hover / menu / dropdown / modal / notice）*/
+body.theme-light .popover,
+body.theme-light .prompt,
+body.theme-light .suggestion-container,
+body.theme-light .hover-popover,
+body.theme-light .menu,
+body.theme-light .dropdown-menu,
+body.theme-light .modal-container .modal,
+body.theme-light .mod-settings,
+body.theme-light .notice {
+  --background-primary: #ffffff;
+  --background-primary-alt: #f6f8fb;
+  --background-secondary: #f6f8fb;
+  --background-secondary-alt: #eef1f6;
+}
+body.theme-dark .popover,
+body.theme-dark .prompt,
+body.theme-dark .suggestion-container,
+body.theme-dark .hover-popover,
+body.theme-dark .menu,
+body.theme-dark .dropdown-menu,
+body.theme-dark .modal-container .modal,
+body.theme-dark .mod-settings,
+body.theme-dark .notice {
+  --background-primary: #1a1d23;
+  --background-primary-alt: #20242c;
+  --background-secondary: #16191e;
+  --background-secondary-alt: #121419;
+}
+
+/* 弹窗内部的 suggestion-item 禁用透明背景 — 继承上方固化的变量 */
+body.theme-dark .popover .suggestion-item,
+body.theme-dark .suggestion-container .suggestion-item,
+body.theme-dark .popover .suggestion-item .suggestion-title,
+body.theme-dark .popover .suggestion-item .suggestion-content,
+body.theme-dark .suggestion-container .suggestion-item .suggestion-title,
+body.theme-dark .suggestion-container .suggestion-item .suggestion-content {
+  background: var(--background-primary) !important;
+}
+body.theme-light .popover .suggestion-item,
+body.theme-light .suggestion-container .suggestion-item,
+body.theme-light .popover .suggestion-item .suggestion-title,
+body.theme-light .popover .suggestion-item .suggestion-content,
+body.theme-light .suggestion-container .suggestion-item .suggestion-title,
+body.theme-light .suggestion-container .suggestion-item .suggestion-content {
+  background: var(--background-primary) !important;
+}
+
+/* 悬浮预览（hover-popover）内的 view-content 禁止透明 — 防止全局 .view-content { transparent !important } 漏到底 */
+body .hover-popover .view-content,
+body .hover-popover .workspace-leaf,
+body .hover-popover .workspace-leaf-content {
+  background: var(--background-primary) !important;
 }
 
 /* 设置面板/弹窗中的菜单：不透明背景，确保可读 */
@@ -1090,8 +1400,6 @@ iframe { background-color: var(--background-primary); }
 
 /* 内部链接在浅色/深色下的 hover 下划线已经通过 --gs-accent 着色，确保颜色足够对比 */
 .internal-link { color: var(--gs-accent); }
-.internal-link.is-unresolved { color: var(--text-faint); }
-
 .menu-item:not(.subitem *):not([class*="-dropdown-menu"] *) { border-radius: 0; }
 .menu-item:not(.subitem *):not([class*="-dropdown-menu"] *):hover,
 .suggestion-item.is-selected {
@@ -1143,18 +1451,19 @@ body.gs-autohide-ui .workspace-ribbon:hover {
   -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
 }
 
-@media (max-width: 768px) {
-  /* 移动端关闭自动隐藏，避免触控难以呼出 */
-  body.gs-autohide-ui .workspace-ribbon {
-    flex: revert !important; width: revert !important; min-width: revert !important;
-    opacity: 1; overflow: visible; backdrop-filter: revert !important;
-  }
-  body.gs-autohide-ui .workspace-ribbon::before { display: none; }
-}
 /* =====================================================================
    移动端
    ===================================================================== */
 @media (max-width: 768px) {
+  /* 关闭自动隐藏，避免触控难以呼出 */
+  body.gs-autohide-ui .workspace-ribbon {
+    flex: revert !important; width: revert !important; min-width: revert !important;
+    opacity: 1; overflow: visible;
+    backdrop-filter: revert !important;
+    -webkit-backdrop-filter: revert !important;
+  }
+  body.gs-autohide-ui .workspace-ribbon::before { display: none; }
+  /* 全局适配：字号缩小、间距收紧 */
   .markdown-rendered, .markdown-preview-view { font-size: calc(var(--font-text-size) * 0.92); }
   .markdown-reading-view .markdown-preview-sizer { padding-block: 1rem; padding-inline: 0.5rem; }
   body .workspace-split.mod-root { padding: 0; gap: 0; }
@@ -1175,7 +1484,6 @@ body.gs-autohide-ui .workspace-ribbon:hover {
   pointer-events: none;
   background: transparent;
 }
-.workspace-split.mod-vertical > * + .workspace-leaf { border-left: none !important; }
 .workspace-split.mod-horizontal > * + .workspace-leaf { border-top: none !important; }
 
 /* 垂直分隔线（侧栏 ↔ 主内容）：渐变微光，两端完全透明 */
