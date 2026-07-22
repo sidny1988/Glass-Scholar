@@ -9,7 +9,7 @@
 <h3 align="center">苹果液态玻璃 · 磨砂全透 · 论文级排版</h3>
 
 <p align="center">
-  <img src="cover.jpg" alt="Glass Scholar — Obsidian Theme" width="100%" style="max-width:960px;border-radius:20px">
+  <img src="https://raw.githubusercontent.com/sidny1988/Glass-Scholar/master/cover.jpg" alt="Glass Scholar — Obsidian Theme" width="100%" style="max-width:960px;border-radius:20px">
 </p>
 
 ---
