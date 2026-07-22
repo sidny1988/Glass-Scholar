@@ -152,7 +152,7 @@ The theme uses **local system fonts only** — no remote font loading, zero netw
 If this theme enhances your daily writing experience, consider supporting its continued development:
 
 <p align="left">
-  <a href="https://afdian.com/a/sidny1988"><img src="https://img.shields.io/badge/爱发电-赞助支持-%23946ce6?style=for-the-badge&logo=buy-me-a-coffee" alt="爱发电"></a>
+  <a href="https://ifdian.net/a/xsx2006"><img src="https://img.shields.io/badge/爱发电-赞助支持-%23946ce6?style=for-the-badge&logo=buy-me-a-coffee" alt="爱发电"></a>
 </p>
 
 Your support helps fund design iterations, cross-platform testing, and new wallpaper presets. Every contribution — no matter the amount — is deeply appreciated. ❤️
@@ -297,7 +297,7 @@ MIT © 2026 Glass Scholar
 如果本主题为你的日常写作带来了更好的体验，欢迎请我喝杯咖啡，支持它的持续开发与维护：
 
 <p align="left">
-  <a href="https://afdian.com/a/sidny1988"><img src="https://img.shields.io/badge/爱发电-赞助支持-%23946ce6?style=for-the-badge&logo=buy-me-a-coffee" alt="爱发电"></a>
+  <a href="https://ifdian.net/a/xsx2006"><img src="https://img.shields.io/badge/爱发电-赞助支持-%23946ce6?style=for-the-badge&logo=buy-me-a-coffee" alt="爱发电"></a>
 </p>
 
 你的支持将帮助支付设计迭代、跨平台测试和新增壁纸配色的开发成本。每一份赞助，无论金额大小，都深表感谢。❤️
