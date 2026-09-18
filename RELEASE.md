@@ -1,4 +1,4 @@
-# 璃墨 Glass Scholar — 发布记录
+# Glass Scholar — 发布记录
 
 > Obsidian 磨砂玻璃主题。极简·通透·论文级排版。
 

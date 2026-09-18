@@ -7,3 +7,5 @@ pnpm-lock.yaml
 pnpm-workspace.yaml
 wallpaper*.svg
 .playwright-mcp/
+css-themes.json
+css-themes-modified.json

@@ -1,4 +1,4 @@
-# CHANGELOG — 璃墨 Glass Scholar
+# CHANGELOG — Glass Scholar
 
 > Obsidian 磨砂玻璃主题。全透明光晕界面 · 极简 · 论文级排版。
 
@@ -329,8 +329,8 @@ Obsidian 默认 CSS 给 `.mod-left-split`（侧栏分割容器）设置了 `back
 6. 滚动条缩到 5px 宽，不滚动时几乎看不见
 
 ### 同步
-- ✅ `D:\MyBrain\.obsidian\themes\璃墨 Glass Scholar\`
-- ✅ `D:\MyNotes\.obsidian\themes\璃墨 Glass Scholar\`
+- ✅ `D:\MyBrain\.obsidian\themes\Glass Scholar\`
+- ✅ `D:\MyNotes\.obsidian\themes\Glass Scholar\`
 
 ---
 > 格式：版本号 / 问题描述 / 根因分析 / 修改清单 / 测试方法 / 影响范围
@@ -397,8 +397,8 @@ Obsidian 默认 CSS 给 `.mod-left-split`（侧栏分割容器）设置了 `back
 | manifest.json 有效 | ✅ 所有必填字段完整 |
 
 ### 同步
-- ✅ `D:\MyBrain\.obsidian\themes\璃墨 Glass Scholar\`
-- ✅ `D:\MyNotes\.obsidian\themes\璃墨 Glass Scholar\`
+- ✅ `D:\MyBrain\.obsidian\themes\Glass Scholar\`
+- ✅ `D:\MyNotes\.obsidian\themes\Glass Scholar\`
 
 ---
 
@@ -471,8 +471,8 @@ Editing Toolbar 插件的颜色选择器（`.x-color-picker-wrapper`）弹出时
 
 ### 同步
 
-- ✅ `D:\MyBrain\.obsidian\themes\璃墨 Glass Scholar\`
-- ✅ `D:\MyNotes\.obsidian\themes\璃墨 Glass Scholar\`
+- ✅ `D:\MyBrain\.obsidian\themes\Glass Scholar\`
+- ✅ `D:\MyNotes\.obsidian\themes\Glass Scholar\`
 
 ---
 </details>

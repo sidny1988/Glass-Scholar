@@ -4,7 +4,7 @@
   <img src="https://img.shields.io/badge/license-MIT-%235b8dff?style=flat-square" alt="license">
 </p>
 
-<h1 align="center">璃墨 Glass Scholar</h1>
+<h1 align="center">Glass Scholar</h1>
 <h3 align="center">Apple Liquid Glass · Frosted Translucency · Academic Typography</h3>
 <h3 align="center">苹果液态玻璃 · 磨砂全透 · 论文级排版</h3>
 
@@ -25,7 +25,7 @@
 
 ## Design Philosophy
 
-**璃墨 Glass Scholar** is an Obsidian theme that blends **Apple's Liquid Glass design language** with **academic-grade typography**. It treats the entire Obsidian workspace as a single continuous sheet of frosted glass — radiant color glows permeate every panel through pure-CSS radial gradients, while subtle blur, specular rim highlights, and siphoned neon edge blooms create a premium multi-layered material feel.
+**Glass Scholar** is an Obsidian theme that blends **Apple's Liquid Glass design language** with **academic-grade typography**. It treats the entire Obsidian workspace as a single continuous sheet of frosted glass — radiant color glows permeate every panel through pure-CSS radial gradients, while subtle blur, specular rim highlights, and siphoned neon edge blooms create a premium multi-layered material feel.
 
 > Think of it as macOS × LaTeX: the depth and translucency of Apple's latest design system, wrapped around a distraction-free, paper-quality reading & writing environment.
 
@@ -171,7 +171,7 @@ MIT © 2026 Glass Scholar
 
 ## 设计理念
 
-**璃墨 Glass Scholar** 是一款融合了 **Apple 液态玻璃（Liquid Glass）设计语言** 与 **学术论文级排版** 的 Obsidian 主题。它将整个 Obsidian 工作区视为一张连续的磨砂玻璃——纯 CSS 径向渐变的彩色光晕穿透每一层面板，而微妙的毛玻璃模糊、镜面高光内缘和虹吸霓虹边缘光则营造出一种高级的多层次材质感。
+**Glass Scholar** 是一款融合了 **Apple 液态玻璃（Liquid Glass）设计语言** 与 **学术论文级排版** 的 Obsidian 主题。它将整个 Obsidian 工作区视为一张连续的磨砂玻璃——纯 CSS 径向渐变的彩色光晕穿透每一层面板，而微妙的毛玻璃模糊、镜面高光内缘和虹吸霓虹边缘光则营造出一种高级的多层次材质感。
 
 > 你可以把它想象为 macOS × LaTeX：Apple 最新设计体系的深度感与通透感，包裹着一个无干扰、纸张品质的阅读与写作环境。
 
