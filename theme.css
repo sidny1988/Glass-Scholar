@@ -1,9 +1,11 @@
 /* =====================================================================
-   Glass Scholar — Obsidian Theme  (v1.1.1)
+   Glass Scholar — Obsidian Theme  (v1.2.0)
    苹果磨砂玻璃质感 · 极简 · 论文级排版
    ---------------------------------------------------------------------
    全界面透明底：纯 CSS 径向渐变光晕（8 种配色）。
    光晕色彩透过所有面板直达眼底，无遮挡、无边界、无隔离。
+
+   v1.2.0 针对 Obsidian 1.15.x 的适配与优化（详见文件末尾 CHANGELOG）
    ===================================================================== */
 
 /* 等宽字体：系统本地字体链，无远程加载依赖 */
@@ -64,6 +66,12 @@ settings:
     min: 0.2
     max: 1.6
     step: 0.05
+
+  - id: gs-no-noise
+    title: 关闭纸张颗粒噪点
+    description: 开启后将去掉光晕之上的极淡纸纹噪点，背景更纯净。
+    type: class-toggle
+    default: false
 
   - id: gs-group-ui
     title: 界面行为
@@ -144,11 +152,14 @@ body {
   --radius-s: 6px;
   --radius-m: 10px;
   --radius-l: 14px;
-  /* —— Obsidian 原生 raised 变量清零 —— */
+  /* —— Obsidian 原生 raised 变量清零 ——
+     1.15 起原生 UI 大量使用 --raised-* 实现「悬浮玻璃」，这里整体清零，
+     保证原生控件与我们自己的玻璃样式视觉一致。 */
   --raised-background: transparent;
   --raised-blur: none;
   --raised-shadow: none;
   --raised-mask-border-width: 0px;
+  --raised-mask-display: none;
   /* —— 字体 —— */
   --font-interface-theme: -apple-system, BlinkMacSystemFont, "SF Pro Text",
       "PingFang SC", "Microsoft YaHei", "Segoe UI", system-ui, sans-serif;
@@ -164,9 +175,11 @@ body {
 
 /* =====================================================================
    颜色变量 — 浅色（光晕关闭时为正常白底）
+   注意：--color-base-* 由 Obsidian 的深浅色方案提供，主题不再覆写
+   单一的 --color-base-10（1.15 中它已参与更多派生变量，
+   只改名一个会破坏 --background-primary-alt 等派生色）。
    ===================================================================== */
 body.theme-light {
-  --color-base-10: #ffffff;
   --gs-text:           #1c2230;
   --gs-text-muted:     #565f70;
   --gs-text-faint:     #8a93a0;
@@ -214,7 +227,6 @@ body.theme-light {
 	--nav-item-background-active:  rgba(74, 111, 165, 0.12);
 
   --scrollbar-bg: transparent;
-  --background-secondary-rgb: 255, 255, 255;
   --scrollbar-thumb-bg: rgba(20, 30, 50, 0.16);
   --scrollbar-active-thumb-bg: rgba(20, 30, 50, 0.28);
 }
@@ -223,10 +235,9 @@ body.theme-light {
    颜色变量 — 深色（光晕关闭时为正常深底）
    ===================================================================== */
 body.theme-dark {
-  --color-base-10: #1e1e1e;
   --gs-text:           #e6eaf2;
   --gs-text-muted:     #9ba6b6;
-  --gs-text-faint:     #69738455;
+  --gs-text-faint:     #697384;
 
   --gs-glass-bg:       color-mix(in srgb, #1a202e calc(var(--gs-glass-opacity, 0.42) * 100%), transparent);
   --gs-glass-bg-alt:   color-mix(in srgb, #1a202e calc(var(--gs-glass-opacity, 0.42) * 65%), transparent);
@@ -261,7 +272,6 @@ body.theme-dark {
   --text-success: #6fcf97;
 
   --interactive-normal:       rgba(255, 255, 255, 0.05);
-  --background-secondary-rgb: 35, 42, 53;
   --interactive-hover:        rgba(255, 255, 255, 0.10);
   --interactive-accent:       var(--gs-accent, #7aa2d6);
   --interactive-accent-hover: var(--gs-accent-hover, #8fb4e4);
@@ -279,6 +289,11 @@ body.theme-dark {
 /* 强调色（固定，与蓝调匹配） */
 body.theme-light { --gs-accent: #4a6fa5; --gs-accent-hover: #3c5a87; }
 body.theme-dark  { --gs-accent: #7aa2d6; --gs-accent-hover: #8fb4e4; }
+
+/* code-scheme 交给 Obsidian 自己的 .theme-light/.theme-dark 声明，
+   这里只补颜色方案提示，避免原生下拉框在深色下变成白底 */
+body.theme-light { color-scheme: light; }
+body.theme-dark  { color-scheme: dark; }
 
 
 /* =====================================================================
@@ -318,8 +333,31 @@ body .view-content {
   background: transparent !important;
 }
 
-/* ── 左侧栏：递归透明，光晕直穿 ── */
+/* 1.15 新增：side-dock 容器与 vault profile 也会带底色，一并透明 */
+body .workspace-sidedock-vault-profile,
+body .workspace-split.mod-primary-split,
+body .workspace-split.mod-secondary-split {
+  background: transparent !important;
+  border-color: transparent !important;
+}
+
+/* ── 左侧栏：递归透明，光晕直穿 ──
+   1.15 的侧栏容器修饰类实测为：
+     .workspace-split.mod-sidedock.mod-primary-split   （左）
+     .workspace-split.mod-sidedock.mod-secondary-split （右）
+   且左右侧栏可互换，所以这里直接用 .mod-sidedock 统一命中两侧，
+   旧的 .mod-left-split 仅作历史兼容保留。 */
 body .mod-left-split,
+body .workspace-split.mod-sidedock .workspace-split,
+body .workspace-split.mod-sidedock .workspace-tabs,
+body .workspace-split.mod-sidedock .workspace-tab-container,
+body .workspace-split.mod-sidedock .workspace-leaf,
+body .workspace-split.mod-sidedock .workspace-leaf-content,
+body .workspace-split.mod-sidedock .view-content,
+body .workspace-split.mod-sidedock .view-header,
+body .workspace-split.mod-sidedock .tree-item-self,
+body .workspace-split.mod-sidedock .tree-item,
+body .workspace-split.mod-sidedock .nav-header,
 body .mod-left-split .workspace-tabs,
 body .mod-left-split .workspace-tab-container,
 body .mod-left-split .workspace-leaf,
@@ -336,8 +374,10 @@ body .mod-left-split .nav-header {
   border-bottom: none !important;
 }
 
-/* ── 右侧栏：对称递归透明 ── */
+/* ── 右侧栏：对称递归透明 ──
+   （.mod-sidedock 已同时覆盖右侧；.mod-sidebar-leaf 为本版新增的主侧栏标记） */
 body .mod-right-split,
+body .workspace-leaf.mod-sidebar-leaf,
 body .mod-right-split .workspace-tabs,
 body .mod-right-split .workspace-tab-container,
 body .mod-right-split .workspace-leaf,
@@ -369,18 +409,6 @@ body .workspace-split.mod-root .view-header {
   border-top: none !important;
 }
 
-/* 第三方插件弹窗：强制不透明 */
-body .subitem,
-body .x-color-picker-wrapper,
-body .editing-toolbar-dropdown-menu,
-body .editing-toolbar-text-input-mention-dropdown {
-  background-color: var(--gs-lg-tint) !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  box-shadow: none !important;
-  border-color: transparent !important;
-}
-
 /* 径向渐变光晕：4 色彩斑 + 底色，模糊晕染 */
 
 body::before {
@@ -397,6 +425,7 @@ body::before {
   background-attachment: fixed;
   filter: blur(var(--gs-glow-blur)) saturate(1.5);
   opacity: var(--gs-glow-opacity);
+  pointer-events: none;
 }
 
 /* 晨曦蓝（主推）：蓝白渐变 —— 顶部蓝色光晕（左+右）向下渐隐为白 */
@@ -408,7 +437,11 @@ body.gs-wp-dayblue::before {
     linear-gradient(180deg, #cddcff 0%, #e4edff 42%, #f4f8ff 72%, #ffffff 100%);
 }
 
-/* 极淡纸纹噪点 */
+/* 极淡纸纹噪点 —— 默认开启；Style Settings 的「关闭纸张颗粒噪点」会加上
+   body.gs-no-noise 来隐藏它（class-toggle 只会【添加】类，不能加 "no-" 类做默认关闭，
+   故选默认 false + 取反类名，保证开关语义正确）。
+   1.15 中 Chromium 对 fixed 伪元素的合成更严格，
+   这里显式声明 will-change 以稳定图层，避免滚动时噪点抖动。 */
 body::after {
   content: "";
   position: fixed;
@@ -418,15 +451,17 @@ body::after {
   opacity: 0.025;
   background-image: radial-gradient(rgba(0,0,0,0.6) 0.5px, transparent 0.5px);
   background-size: 3px 3px;
+  will-change: transform;
 }
+body.gs-no-noise::after { display: none; }
 
 
 /* =====================================================================
    磨砂玻璃 —— 仅弹窗 / 通知 / 悬浮层保留
    ===================================================================== */
 /* 弹窗 & 通知：Apple Liquid Glass */
-body .modal-container .modal:not(.x-color-picker-wrapper *),
-body .notice:not(.x-color-picker-wrapper *) {
+body .modal-container .modal,
+body .notice {
   background-color: var(--gs-glass-bg);
   backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
   -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
@@ -434,15 +469,18 @@ body .notice:not(.x-color-picker-wrapper *) {
   border: none;
 }
 
-body .status-bar:not(.x-color-picker-wrapper *) {
+body .status-bar {
   background-color: var(--gs-glass-bg-alt);
   backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
   -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
   border: none;
 }
 
-/* 左侧 Ribbon：完全透明 */
-body .workspace-ribbon.mod-left:not(.x-color-picker-wrapper *) {
+/* 左侧 Ribbon：完全透明
+   —— 1.15 中 ribbon 的修饰类是 .mod-primary / .mod-secondary（不再是 mod-left），
+      旧选择器 .workspace-ribbon.mod-left 永远不匹配，此处两种都写以兼容。 */
+body .workspace-ribbon.mod-left,
+body .workspace-ribbon.mod-primary {
   background: transparent !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
@@ -456,16 +494,18 @@ body .workspace-ribbon.mod-left:not(.x-color-picker-wrapper *) {
   border: none !important;
 }
 
-/* 桌面端：无卡片感，全局通透 */
+/* 桌面端：无卡片感，全局通透
+   —— 1.15 已移除 .mod-side-dock，侧栏与主区域的水平分割改由
+      .workspace-split.mod-sidedock 标记；这里对新旧命名都做归零。 */
 @media (min-width: 900px) {
   body .workspace-split.mod-root {
     padding: 0;
     gap: 0;
   }
-  body .workspace-split.mod-horizontal > .workspace-leaf.mod-side-dock {
-    margin: 0;
-  }
-  body .workspace-split.mod-horizontal > .workspace-leaf.mod-side-dock + .workspace-leaf {
+  body .workspace-split.mod-horizontal > .workspace-leaf.mod-sidedock,
+  body .workspace-split.mod-horizontal > .workspace-leaf.mod-sidedock + .workspace-leaf,
+  body .workspace-split.mod-horizontal > .workspace-leaf.mod-sidebar-leaf,
+  body .workspace-split.mod-horizontal > .workspace-leaf.mod-sidebar-leaf + .workspace-leaf {
     margin: 0;
   }
 }
@@ -558,7 +598,15 @@ body.theme-dark .workspace-tab-header.is-active {
 }
 
 /* 状态栏：融合底条，弱存在感 */
-.status-bar { margin: 0; border-radius: 0; border: none !important; padding: 0 12px; font-size: var(--font-ui-smaller); box-shadow: none; background: transparent; }
+.status-bar {
+  margin: 0;
+  border-radius: 0;
+  border: none !important;
+  padding: 0 12px;
+  font-size: var(--font-ui-smaller);
+  box-shadow: none;
+  background: transparent;
+}
 
 /* 侧边栏文件/文件夹项：Apple Liquid Glass hover */
 body.theme-light .tree-item-self.is-clickable:hover,
@@ -599,7 +647,9 @@ body.theme-dark .nav-folder-title:hover {
    仅 Obsidian 原生 UI，不碰第三方插件
    ===================================================================== */
 
-/* 输入框/下拉：柔和玻璃底 */
+/* 输入框/下拉：柔和玻璃底
+   —— 1.15 原生输入框选择器已使用 :where() 降低优先级，
+      这里的 !important 可以稳定覆盖；保留 no-drag 以免与标题栏拖拽冲突。 */
 body input[type="text"], body input[type="search"], body input[type="number"], body textarea, body select {
   border-radius: 10px !important;
   border: none !important;
@@ -607,6 +657,7 @@ body input[type="text"], body input[type="search"], body input[type="number"], b
   backdrop-filter: blur(var(--gs-blur)) saturate(1.2);
   -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(1.2);
   box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.25);
+  -webkit-app-region: no-drag;
   transition: background .2s cubic-bezier(.4, 0, .2, 1), box-shadow .2s cubic-bezier(.4, 0, .2, 1);
 }
 
@@ -677,19 +728,18 @@ body button.mod-cta:active {
 /* =====================================================================
    Apple Liquid Glass 图标交互
 
-   真实 Obsidian DOM 类名（已验证）：
+   真实 Obsidian 1.15 DOM 类名（已对照 app.css / app.js 验证）：
    - .clickable-icon → view-header / ribbon / status-bar / tab-header 内
    - .nav-action-button → 文件导航栏顶部操作按钮
-   - .tree-item-icon → 侧栏文件夹折叠箭头
-   - .nav-file-title/.nav-folder-title → 文件/文件夹条目行
-   - .nn-navigation-calendar-nav-button → NN 日历导航 < >
-   - .nn-navigation-calendar-period-button → NN 周期切换
-   - .nn-navigation-calendar-quarter-button → NN 季度切换
-   - .nn-icon-button → NN 通用图标按钮
-   - .nn-navitem-chevron → NN 导航树折叠箭头
-   - .nn-navitem-hover-action-button → NN 条目 hover 操作按钮
+   - .tree-item-icon → 侧栏文件夹折叠箭头（position:absolute，勿加 padding）
+   - .view-action → 视图标题栏按钮
+   - .sidebar-toggle-button → 侧边栏开关
+   - .workspace-tab-header-inner-icon / -close-button → 标签页图标与关闭钮
+   - .graph-controls .clickable-icon → 图谱控制面板
 
-   排除：.claudian-* / .x-color-picker* / 其它第三方插件
+   已移除的无效第三方选择器（1.15 下不存在，纯属体积负担）：
+   .nn-*（Notebook Navigator）、.claudian-*、.x-color-picker-wrapper、
+   .dropdown-menu / .multi-select-menu（原生不存在）
    ===================================================================== */
 
 /* ── 通用默认态 ── */
@@ -702,14 +752,7 @@ body button.mod-cta:active {
 .status-bar .clickable-icon,
 .nav-header .clickable-icon,
 .titlebar-button,
-.graph-controls .clickable-icon,
-.tree-item-icon,
-.nn-navigation-calendar-nav-button,
-.nn-navigation-calendar-period-button,
-.nn-navigation-calendar-quarter-button,
-.nn-icon-button,
-.nn-navitem-chevron,
-.nn-navitem-hover-action-button {
+.graph-controls .clickable-icon {
   border-radius: 8px;
   padding: 5px;
   color: var(--gs-text-muted);
@@ -721,9 +764,16 @@ body button.mod-cta:active {
   transform: none;
   transition: all 0.2s cubic-bezier(0.2, 0.0, 0.0, 1.0);
 }
-.tree-item-icon { padding: 4px; }
 .titlebar-button { border-radius: 6px; padding: 0; }
-.nn-icon-button { padding: 4px 6px; }
+
+/* 折叠箭头：原生为绝对定位，单独处理，不加 padding/背景，
+   仅调颜色与过渡，避免把文件夹树挤歪（v1.2 修复）。 */
+.tree-item-icon {
+  border-radius: 6px;
+  color: var(--gs-text-muted);
+  transition: color 0.2s cubic-bezier(0.2, 0.0, 0.0, 1.0), transform 0.2s cubic-bezier(0.2, 0.0, 0.0, 1.0);
+}
+.tree-item-self:hover .tree-item-icon { color: var(--gs-text); }
 
 /* ── 浅色 hover ── */
 body.theme-light .workspace-tab-header .clickable-icon:hover,
@@ -735,14 +785,7 @@ body.theme-light .workspace-ribbon .clickable-icon:hover,
 body.theme-light .status-bar .clickable-icon:hover,
 body.theme-light .nav-header .clickable-icon:hover,
 body.theme-light .titlebar-button:hover,
-body.theme-light .graph-controls .clickable-icon:hover,
-body.theme-light .tree-item-icon:hover,
-body.theme-light .nn-navigation-calendar-nav-button:hover,
-body.theme-light .nn-navigation-calendar-period-button:hover,
-body.theme-light .nn-navigation-calendar-quarter-button:hover,
-body.theme-light .nn-icon-button:hover,
-body.theme-light .nn-navitem-chevron:hover,
-body.theme-light .nn-navitem-hover-action-button:hover {
+body.theme-light .graph-controls .clickable-icon:hover {
   background: rgba(0,0,0,0.055) !important;
   backdrop-filter: blur(12px) saturate(1.5) !important;
   -webkit-backdrop-filter: blur(12px) saturate(1.5) !important;
@@ -761,14 +804,7 @@ body.theme-dark .workspace-ribbon .clickable-icon:hover,
 body.theme-dark .status-bar .clickable-icon:hover,
 body.theme-dark .nav-header .clickable-icon:hover,
 body.theme-dark .titlebar-button:hover,
-body.theme-dark .graph-controls .clickable-icon:hover,
-body.theme-dark .tree-item-icon:hover,
-body.theme-dark .nn-navigation-calendar-nav-button:hover,
-body.theme-dark .nn-navigation-calendar-period-button:hover,
-body.theme-dark .nn-navigation-calendar-quarter-button:hover,
-body.theme-dark .nn-icon-button:hover,
-body.theme-dark .nn-navitem-chevron:hover,
-body.theme-dark .nn-navitem-hover-action-button:hover {
+body.theme-dark .graph-controls .clickable-icon:hover {
   background: rgba(255,255,255,0.085) !important;
   backdrop-filter: blur(14px) saturate(1.5) !important;
   -webkit-backdrop-filter: blur(14px) saturate(1.5) !important;
@@ -787,14 +823,7 @@ body.theme-dark .nn-navitem-hover-action-button:hover {
 .status-bar .clickable-icon:active,
 .nav-header .clickable-icon:active,
 .titlebar-button:active,
-.graph-controls .clickable-icon:active,
-.tree-item-icon:active,
-.nn-navigation-calendar-nav-button:active,
-.nn-navigation-calendar-period-button:active,
-.nn-navigation-calendar-quarter-button:active,
-.nn-icon-button:active,
-.nn-navitem-chevron:active,
-.nn-navitem-hover-action-button:active {
+.graph-controls .clickable-icon:active {
   background: color-mix(in srgb, var(--gs-lg-tint) 48%, transparent) !important;
   transform: scale(1.0) translateY(0.5px);
   box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.12) !important;
@@ -828,57 +857,61 @@ body.theme-light .graph-view.color-line {
 body.theme-light .graph-view.color-line-highlight {
   color: rgba(50, 70, 100, 0.45);
 }
-/* 图谱控制面板按钮（已在上方图标交互区块中覆盖） */
+
 
 /* =====================================================================
-   Notebook Navigator 日历：Apple 风格交互
+   Canvas / PDF / Bases 等内置视图：与玻璃底融合（v1.2 新增）
    ===================================================================== */
-/* 日历格子：干净无背景，保留 hover 高亮 */
-.nn-navigation-calendar-day-cell,
-.nn-navigation-calendar-day-number {
+body .canvas-wrapper,
+body .canvas-background,
+body .pdf-viewer,
+body .pdf-container,
+body .pdf-embed,
+body .bases-view,
+body .webviewer-content {
   background: transparent !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  box-shadow: none !important;
-  border: none !important;
-  border-radius: 0 !important;
 }
-.nn-navigation-calendar-day-cell:hover {
-  background: var(--background-modifier-hover) !important;
-  border-radius: 8px;
+/* PDF 页面保持白纸，但去掉生硬描边 */
+body .pdf-page {
+  border-radius: 6px;
+  box-shadow: 0 2px 14px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.05) !important;
 }
-/* 今日标记 */
-.nn-navigation-calendar-today,
-.nn-navigation-calendar-day-cell.is-today {
-  background: var(--gs-accent) !important;
-  color: var(--text-on-accent) !important;
-  font-weight: 700;
-  border-radius: 8px;
-}
-/* 日历导航/周期/季度按钮：Apple Liquid Glass 交互（已在图标按钮区块定义，此处仅做圆角增强） */
-.nn-navigation-calendar-nav-button,
-.nn-navigation-calendar-period-button,
-.nn-navigation-calendar-quarter-button {
-  border-radius: 8px !important;
-  border: none !important;
-}
-.nn-navigation-calendar-day-cell.is-outside-month,
-.nn-navigation-calendar-day-cell .is-outside-month {
-  opacity: 0.4;
-}
+body.theme-dark .pdf-page { box-shadow: 0 2px 14px rgba(0,0,0,0.45) !important; }
 
 
 /* =====================================================================
    论文排版
    ===================================================================== */
-.markdown-rendered, .markdown-source-view.is-live-preview .cm-scroller, .markdown-preview-view {
-  --file-line-width: var(--gs-measure, 72ch);
+
+/* —— 阅读行宽（v1.2 关键修复）——
+   Obsidian 1.15 自带规则：
+     .markdown-source-view.mod-cm6.is-readable-line-width .cm-sizer{max-width:var(--file-line-width);margin:auto}
+     .markdown-preview-view.is-readable-line-width .markdown-preview-sizer{max-width:var(--file-line-width);margin:auto}
+   旧主题把 --file-line-width 定义在 .markdown-rendered 上（子孙节点，
+   对 cm-sizer 不生效），又额外给 .markdown-rendered 加了一层 max-width，
+   导致：① 行宽设置基本失效；② 与「可读行宽」开关双重限宽、左右留白不均。
+   现改为在视图根节点定义 --file-line-width，让原生居中逻辑接管。 */
+body .markdown-source-view.mod-cm6.is-readable-line-width,
+body .markdown-preview-view.is-readable-line-width {
+  --file-line-width: calc(var(--gs-measure, 72) * 1ch);
+}
+
+.markdown-rendered,
+.markdown-source-view.is-live-preview .cm-scroller,
+.markdown-preview-view {
   font-size: var(--font-text-size);
   line-height: var(--gs-line-height, 1.85);
   letter-spacing: 0.005em;
   color: var(--gs-text);
 }
-.markdown-reading-view .markdown-preview-sizer, .markdown-rendered { max-width: var(--gs-measure, 72ch); margin-inline: auto; padding-block: 2rem; }
+/* 编辑器行高由 CM6 的 --line-height-normal 驱动 */
+.markdown-source-view.mod-cm6.is-live-preview .cm-scroller {
+  --line-height-normal: var(--gs-line-height, 1.85);
+}
+.markdown-reading-view .markdown-preview-sizer {
+  padding-block: 2rem;
+}
+.markdown-reading-view .markdown-preview-section { width: 100% !important; }
 
 .markdown-rendered p, .markdown-preview-view p, .is-live-preview p { margin-block: 0 1em; orphans: 3; widows: 3; }
 body.gs-justify .markdown-rendered p, body.gs-justify .markdown-preview-view p { text-align: justify; text-justify: inter-character; hyphens: auto; -webkit-hyphens: auto; }
@@ -893,6 +926,9 @@ body.gs-dropcap .markdown-rendered > p:first-of-type::first-letter, body.gs-drop
 .markdown-rendered h4, .is-live-preview .cm-header-4 { font-size: 1.04em; font-weight: 600; margin: 1.1em 0 0.4em; }
 .markdown-rendered h5, .markdown-rendered h6 { font-size: 0.92em; font-weight: 600; color: var(--gs-text-muted); margin: 1em 0 0.35em; }
 h1, h2, h3, h4, h5, h6 { font-family: var(--font-text-theme); scroll-margin-top: 4rem; }
+
+/* 内联标题（笔记第一行的 H1） */
+.inline-title { font-weight: 700; }
 
 /* 代码注释（深色模式）：提高可读性 */
 body.theme-dark .cm-comment,
@@ -926,6 +962,16 @@ body.theme-light .HyperMD-codeblock .cm-comment {
 .markdown-rendered blockquote, .is-live-preview blockquote { margin: 1.2em 0; padding: 0.6em 1.2em; background: var(--gs-quote-bg); border-left: 3px solid var(--gs-accent); border-radius: 0 10px 10px 0; color: var(--gs-text-muted); font-style: normal; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .markdown-rendered blockquote p { margin: 0.3em 0; }
 
+/* Callout 提示框：与玻璃语言统一（v1.2 新增） */
+.callout {
+  border-radius: var(--radius-m);
+  border: none;
+  background-color: color-mix(in srgb, var(--callout-color) 8%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.callout-title { font-weight: 600; }
+
 /* 分隔线 */
 .markdown-rendered hr, .is-live-preview hr, .is-live-preview .HyperMD-hr { border: none; height: 1px; margin: 2.4em auto; width: 40%; background: linear-gradient(90deg, transparent, var(--gs-glass-border-2), transparent); }
 
@@ -937,52 +983,75 @@ body.theme-light .HyperMD-codeblock .cm-comment {
 /* 链接 */
 .markdown-rendered a, .is-live-preview a { color: var(--gs-accent); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--gs-accent) 35%, transparent); transition: border-color .15s ease; }
 .markdown-rendered a:hover { border-bottom-color: var(--gs-accent); }
-.internal-link.is-unresolved { color: var(--gs-text-faint); border-bottom-style: dashed; }
+.markdown-rendered .internal-link.is-unresolved { color: var(--gs-text-faint); border-bottom-style: dashed; opacity: 1; }
 
-/* 表格 */
-.markdown-rendered .table-wrapper, .markdown-rendered table, .is-live-preview table { width: 100%; border-collapse: collapse; margin: 1.5em 0; font-size: 0.92em; border-top: 2px solid var(--gs-text); border-bottom: 2px solid var(--gs-text); border-radius: 10px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04); }
+/* 表格
+   —— 1.15 的 .table-wrapper 是滚动容器，圆角+溢出裁剪应当放在它上面；
+      直接给 table 加 overflow:hidden 会让 sticky 表头失效。 */
+.markdown-rendered .table-wrapper {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+  margin: 1.5em 0;
+}
+.markdown-rendered .table-wrapper:has(table) { display: block; }
+.markdown-rendered table, .is-live-preview table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+  font-size: 0.92em;
+  border-top: 2px solid var(--gs-text);
+  border-bottom: 2px solid var(--gs-text);
+}
 .markdown-rendered th, .is-live-preview th { padding: 0.65em 0.95em; text-align: left; font-weight: 600; letter-spacing: 0.01em; border-bottom: 1px solid var(--gs-glass-border-2); background: var(--gs-table-head); color: var(--gs-text); }
 .markdown-rendered td, .is-live-preview td { padding: 0.58em 0.95em; border-bottom: 1px solid var(--gs-glass-border-2); }
 .markdown-rendered tbody tr:nth-child(even), .is-live-preview tbody tr:nth-child(even) { background: var(--gs-table-stripe); }
 .markdown-rendered tr:last-child td, .is-live-preview tr:last-child td { border-bottom: none; }
 .markdown-rendered tbody tr:hover, .is-live-preview tbody tr:hover { background: var(--gs-table-head); }
 
-/* 标签 */
-a.tag, .tag { font-size: 0.82em; font-family: var(--font-interface-theme); background: var(--gs-table-head); color: var(--gs-accent); border-radius: 10px; padding: 0.08em 0.6em; border: none; }
+/* 标签（原生 DOM 为 a.tag） */
+body a.tag {
+  font-size: 0.82em;
+  font-family: var(--font-interface-theme);
+  background: var(--gs-table-head);
+  color: var(--gs-accent);
+  border-radius: 10px;
+  padding: 0.08em 0.6em;
+  border: none;
+  text-decoration: none;
+}
+body a.tag:hover { background: color-mix(in srgb, var(--gs-accent) 18%, transparent); }
 
 /* 图片 */
 .markdown-rendered img, .is-live-preview img { border-radius: 12px; max-width: 100%; box-shadow: 0 2px 14px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04); }
 
-/* 任务框 */
+/* 任务框
+   —— 1.15 勾选态由 --checkbox-color 驱动，这里改为给变量，
+      避免 !important 直接写死 background 导致「部分勾选/进行中」样式失效。 */
 .task-list-item-checkbox { border-radius: 6px !important; border: 1.5px solid var(--gs-text-faint) !important; }
-.task-list-item.is-checked .task-list-item-checkbox { background: var(--gs-accent) !important; border-color: var(--gs-accent) !important; }
+.task-list-item.is-checked .task-list-item-checkbox,
+.task-list-item-checkbox:checked {
+  background-color: var(--gs-accent) !important;
+  border-color: var(--gs-accent) !important;
+}
 
 
 /* =====================================================================
    弹窗 / 菜单 / 悬浮
    ===================================================================== */
-.modal-container .modal:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *) { border-radius: 20px; overflow: hidden; border: none; }
-.menu:not(.x-color-picker-wrapper *),
-.popover:not(.x-color-picker-wrapper *) { border-radius: 16px; padding: 6px; border: none; }
+.modal-container .modal { border-radius: 20px; overflow: hidden; border: none; }
+.menu, .popover { border-radius: 16px; padding: 6px; border: none; }
 
 /*
    Apple Liquid Glass 弹窗磨砂 —— 自包含微型光晕方案
    ====================================================
-   创新点：弹窗自带径向渐变微型光晕（使用 --gs-glow-* 颜色变量），
+   弹窗自带径向渐变微型光晕（使用 --gs-glow-* 颜色变量），
    不依赖 backdrop-filter 采样背后的 body::before 光晕。
-
-   栈叠结构（每层弹窗的 background）：
-     层1: 微型光晕1 — 径向渐变，颜色来自 --gs-glow-1
-     层2: 微型光晕2 — 径向渐变，颜色来自 --gs-glow-2/3
-     层3: 实色基底 — 高不透明度兜底
-     层4: SVG 噪点 — 模拟磨砂玻璃颗粒
-   backdrop-filter: 仅作辅助深度（32px 稳定值）
-   box-shadow: 虹吸霓虹边缘光
-
-   性能：光晕渐变在弹窗本地渲染，不受 body::before 光晕强度影响。
+   backdrop-filter: 仅作辅助深度。
 */
+
 /* —— 浅色模式弹窗 —— */
-body.theme-light .popover:not(.x-color-picker-wrapper *) {
+body.theme-light .popover {
 	background:
 		radial-gradient(ellipse 50% 50% at 10% 8%, color-mix(in srgb, var(--gs-glow-1) 12%, transparent) 0%, transparent 78%),
 		radial-gradient(ellipse 50% 50% at 90% 8%, color-mix(in srgb, var(--gs-glow-2) 8%, transparent) 0%, transparent 78%),
@@ -995,9 +1064,9 @@ body.theme-light .popover:not(.x-color-picker-wrapper *) {
 	-webkit-backdrop-filter: blur(32px) saturate(1.8) !important;
 	box-shadow: var(--gs-popup-shadow) !important;
 }
-body.theme-light .prompt:not(.x-color-picker-wrapper *),
-body.theme-light .suggestion-container:not(.x-color-picker-wrapper *),
-body.theme-light .hover-popover:not(.x-color-picker-wrapper *) {
+body.theme-light .prompt,
+body.theme-light .suggestion-container,
+body.theme-light .hover-popover {
 	background:
 		radial-gradient(ellipse 50% 50% at 10% 8%, color-mix(in srgb, var(--gs-glow-1) 12%, transparent) 0%, transparent 78%),
 		radial-gradient(ellipse 50% 50% at 90% 8%, color-mix(in srgb, var(--gs-glow-2) 8%, transparent) 0%, transparent 78%),
@@ -1012,8 +1081,7 @@ body.theme-light .hover-popover:not(.x-color-picker-wrapper *) {
 	border-radius: 14px !important;
 	border: none !important;
 }
-body.theme-light .menu:not(.x-color-picker-wrapper *),
-body.theme-light .dropdown-menu:not(.x-color-picker-wrapper *) {
+body.theme-light .menu {
 	background:
 		radial-gradient(ellipse 45% 45% at 10% 8%, color-mix(in srgb, var(--gs-glow-1) 10%, transparent) 0%, transparent 76%),
 		radial-gradient(ellipse 45% 45% at 90% 8%, color-mix(in srgb, var(--gs-glow-2) 6%, transparent) 0%, transparent 76%),
@@ -1030,7 +1098,7 @@ body.theme-light .dropdown-menu:not(.x-color-picker-wrapper *) {
 }
 
 /* —— 深色模式弹窗 —— */
-body.theme-dark .popover:not(.x-color-picker-wrapper *) {
+body.theme-dark .popover {
   background:
     radial-gradient(ellipse 55% 55% at 10% 8%, color-mix(in srgb, var(--gs-glow-1) 35%, transparent) 0%, transparent 75%),
     radial-gradient(ellipse 55% 55% at 90% 8%, color-mix(in srgb, var(--gs-glow-2) 28%, transparent) 0%, transparent 75%),
@@ -1043,9 +1111,9 @@ body.theme-dark .popover:not(.x-color-picker-wrapper *) {
   -webkit-backdrop-filter: blur(48px) saturate(2) brightness(2.2) !important;
   box-shadow: var(--gs-popup-shadow) !important;
 }
-body.theme-dark .prompt:not(.x-color-picker-wrapper *),
-body.theme-dark .suggestion-container:not(.x-color-picker-wrapper *),
-body.theme-dark .hover-popover:not(.x-color-picker-wrapper *) {
+body.theme-dark .prompt,
+body.theme-dark .suggestion-container,
+body.theme-dark .hover-popover {
   background:
     radial-gradient(ellipse 55% 55% at 10% 8%, color-mix(in srgb, var(--gs-glow-1) 35%, transparent) 0%, transparent 75%),
     radial-gradient(ellipse 55% 55% at 90% 8%, color-mix(in srgb, var(--gs-glow-2) 28%, transparent) 0%, transparent 75%),
@@ -1060,8 +1128,7 @@ body.theme-dark .hover-popover:not(.x-color-picker-wrapper *) {
   border-radius: 14px !important;
   border: none !important;
 }
-body.theme-dark .menu:not(.x-color-picker-wrapper *),
-body.theme-dark .dropdown-menu:not(.x-color-picker-wrapper *) {
+body.theme-dark .menu {
   background:
     radial-gradient(ellipse 50% 50% at 10% 8%, color-mix(in srgb, var(--gs-glow-1) 30%, transparent) 0%, transparent 73%),
     radial-gradient(ellipse 50% 50% at 90% 8%, color-mix(in srgb, var(--gs-glow-2) 24%, transparent) 0%, transparent 73%),
@@ -1078,14 +1145,12 @@ body.theme-dark .dropdown-menu:not(.x-color-picker-wrapper *) {
 }
 
 
-/* 弹窗内部子元素背景全固化：防止继承 :root 的 transparent 变量导致透底
-   覆盖所有 Obsidian 弹窗容器类型（popover / prompt / suggestion / hover / menu / dropdown / modal / notice）*/
+/* 弹窗内部子元素背景全固化：防止继承 body 的 transparent 变量导致透底 */
 body.theme-light .popover,
 body.theme-light .prompt,
 body.theme-light .suggestion-container,
 body.theme-light .hover-popover,
 body.theme-light .menu,
-body.theme-light .dropdown-menu,
 body.theme-light .modal-container .modal,
 body.theme-light .mod-settings,
 body.theme-light .notice {
@@ -1099,7 +1164,6 @@ body.theme-dark .prompt,
 body.theme-dark .suggestion-container,
 body.theme-dark .hover-popover,
 body.theme-dark .menu,
-body.theme-dark .dropdown-menu,
 body.theme-dark .modal-container .modal,
 body.theme-dark .mod-settings,
 body.theme-dark .notice {
@@ -1127,7 +1191,8 @@ body.theme-light .suggestion-container .suggestion-item .suggestion-content {
   background: var(--background-primary) !important;
 }
 
-/* 悬浮预览（hover-popover）内的 view-content 禁止透明 — 防止全局 .view-content { transparent !important } 漏到底 */
+/* 悬浮预览（hover-popover）内的 view-content 禁止透明
+   —— 防止全局 .view-content { transparent !important } 漏到底 */
 body .hover-popover .view-content,
 body .hover-popover .workspace-leaf,
 body .hover-popover .workspace-leaf-content {
@@ -1136,41 +1201,24 @@ body .hover-popover .workspace-leaf-content {
 
 /* 设置面板/弹窗中的菜单：不透明背景，确保可读 */
 .modal-container .menu,
-.modal-container .dropdown-menu,
 .mod-settings .menu,
-.mod-settings .dropdown-menu,
-.popover .menu,
-.popover .dropdown-menu {
+.popover .menu {
   background-color: var(--background-primary);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
 
-/* 交互弹层 + Claudian 插件弹窗：高不透明 + 强模糊，排除颜色选择器 */
-body .modal-container .modal:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
-body .multi-select-menu:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
-/* Claudian 全系列插件弹窗（通配符覆盖所有变体）*/
-body [class*="claudian-"][class*="dropdown"]:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
-body [class*="claudian-"][class*="menu"]:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
-body [class*="claudian-"][class*="modal"]:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
-body [class*="claudian-"][class*="popover"]:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *),
-body .claudian-thinking-options:not(.x-color-picker-wrapper):not(.x-color-picker-wrapper *) {
+/* 交互弹层：高不透明 + 强模糊 */
+body .modal-container .modal {
   background-color: color-mix(in srgb, var(--gs-lg-tint) 94%, transparent) !important;
   backdrop-filter: blur(36px) saturate(1.5) !important;
   -webkit-backdrop-filter: blur(36px) saturate(1.5) !important;
   box-shadow: 0 12px 40px rgba(0,0,0,0.18), inset 0 0.5px 0 var(--gs-lg-rim) !important;
 }
 
-/* 弹层与设置页内表单控件：文字用主题前景、背景用表单字段色，避免变量泄漏导致白底白字 */
-/* 主题颜色方案：让原生表单控件（select/option/scrollbar）跟随主题，避免系统白底白字 */
-body.theme-light .modal-container .modal select,
-body.theme-light .mod-settings select,
-body.theme-light .style-settings-container select { color-scheme: light; }
-body.theme-dark .modal-container .modal select,
-body.theme-dark .mod-settings select,
-body.theme-dark .style-settings-container select { color-scheme: dark; }
+/* 弹层与设置页内表单控件：文字用主题前景、背景用表单字段色，避免白底白字 */
 .modal-container .modal,
-.popover, .hover-popover, .menu, .suggestion-container, .dropdown-menu,
+.popover, .hover-popover, .menu, .suggestion-container,
 .mod-settings {
   color: var(--text-normal);
 }
@@ -1209,32 +1257,10 @@ body.theme-dark .mod-settings .setting-item:not(.mod-toggle):hover {
   background-color: var(--background-secondary);
 }
 
-/* Editing Toolbar 颜色选择器：全局重置，阻止任何上游规则污染
-   用更高优先级 + !important 清零 backdrop-filter / box-shadow / transform /
-   background-color，让颜色选择器呈现原生气泡外观而不被悬浮阴影包裹 */
-.x-color-picker-wrapper,
-.x-color-picker-wrapper *,
-.x-color-picker-wrapper *::before,
-.x-color-picker-wrapper *::after {
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  box-shadow: none !important;
-  filter: none !important;
-  transform: none !important;
-  border: none !important;
-  border-radius: 0 !important;
-  overflow: visible !important;
-}
-.x-color-picker-wrapper {
-  background-color: var(--background-primary) !important;
-}
-
 /* 深色模式兜底：Obsidian 原生弹窗深底白字 */
 body.theme-dark .menu,
 body.theme-dark .popover,
-body.theme-dark .suggestion-container,
-body.theme-dark .dropdown-menu,
-body.theme-dark .multi-select-menu { color: #e6eaf2 !important; }
+body.theme-dark .suggestion-container { color: #e6eaf2 !important; }
 body.theme-dark .modal-container .modal,
 body.theme-dark .mod-settings { color: #e6eaf2 !important; background-color: #16191e !important; }
 
@@ -1270,9 +1296,7 @@ body.theme-dark .mod-settings button:not(.mod-cta):not(.mod-warning) {
 /* 浅色模式兜底：菜单/弹窗白底黑字 */
 body.theme-light .menu,
 body.theme-light .popover,
-body.theme-light .suggestion-container,
-body.theme-light .dropdown-menu,
-body.theme-light .multi-select-menu { color: #1c2230 !important; }
+body.theme-light .suggestion-container { color: #1c2230 !important; }
 body.theme-light .modal-container .modal,
 body.theme-light .mod-settings { color: #1c2230 !important; background-color: #ffffff !important; }
 body.theme-light .suggestion-item,
@@ -1291,123 +1315,100 @@ body.theme-light select option {
 
 /* =====================================================================
    细节兜底：tooltip、checkbox、slider、search、placeholder、selection
-   防止浏览器原生样式在主题切换时残留"白底"或变量泄漏
    ===================================================================== */
 input::placeholder, textarea::placeholder { color: var(--text-faint); opacity: 1; }
-::-webkit-input-placeholder { color: var(--text-faint); }
 
 /* 选中文本 */
 ::selection { background: color-mix(in srgb, var(--gs-accent) 28%, transparent); }
 
-/* tooltip 提示框 */
-body.theme-light .tooltip, body.theme-light [class*="tooltip"] {
+/* tooltip 提示框
+   —— 只作用于原生 .tooltip。旧写法同时匹配 [class*="tooltip"]，
+      会把第三方插件里所有类名含 tooltip 的容器都染成实心块，已移除。 */
+body.theme-light .tooltip {
   background-color: #1c2230 !important; color: #ffffff !important; border: none !important;
 }
-body.theme-dark .tooltip, body.theme-dark [class*="tooltip"] {
+body.theme-dark .tooltip {
   background-color: #e6eaf2 !important; color: #1a1d23 !important; border: none !important;
 }
 
-/* checkbox / radio / slider 等原生控件跟随主题 */
+/* checkbox / radio 等原生控件跟随主题 */
 body.theme-light input[type="checkbox"], body.theme-light input[type="radio"] {
   background-color: #ffffff !important; border-color: var(--background-modifier-border) !important;
 }
 body.theme-dark input[type="checkbox"], body.theme-dark input[type="radio"] {
   background-color: #20242c !important; border-color: rgba(255,255,255,0.2) !important; }
-body.theme-light input[type="range"] { background: transparent; }
-body.theme-dark input[type="range"] { background: transparent; }
 
-/* 滑块控件：核心思路 = 容器高度等于 track 高度，thumb 绝对定位居中
-   关键：把 input 容器高度设成 track 高度（去掉 webkit 默认的额外 padding），
-   再让 thumb 用 margin auto + transform 居中。这样不管浏览器版本怎么解释 thumb 位置，
-   thumb 中线一定对齐 track 中线 */
-input[type="range"] {
-  -webkit-appearance: none !important;
-  appearance: none !important;
+/* =====================================================================
+   滑块控件（设置面板 / Style Settings）
+   ---------------------------------------------------------------------
+   Obsidian 1.15 已把滑块完全 token 化：
+     --slider-track-background / --slider-fill-background
+     --slider-thumb-background / --slider-thumb-width / --slider-thumb-height
+     --slider-thumb-y  ← thumb 相对轨道的垂直偏移（原生居中的关键）
+   旧主题用 `height:6px!important` + `margin-top:0!important` 去手动"猜"居中，
+   在 1.15 里会与原生 thumb 的 top/margin 计算打架，导致滑柄偏上、轨道被截断。
+   改为只覆盖 **颜色与形状**，几何完全交给原生 token。
+   ===================================================================== */
+body.theme-light input[type="range"] {
+  --slider-track-background: rgba(0, 0, 0, 0.16);
+  --slider-fill-background: var(--gs-accent);
+  --slider-thumb-background: #ffffff;
+  --slider-thumb-background-hover: #ffffff;
+  --slider-thumb-border-color: color-mix(in srgb, var(--gs-accent) 70%, transparent);
+  --slider-thumb-border-width: 2px;
+  --slider-thumb-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+  --slider-thumb-shadow-hover: 0 2px 6px rgba(0, 0, 0, 0.22);
   cursor: pointer;
-  background: transparent;
-  /* 容器高度 = track 高度（默认 6px），不带任何多余空间 */
-  height: 6px !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  /* 让 thumb 在容器内绝对居中：用 flex + 容器高度=track 高度，thumb 居中靠 box */
 }
-input[type="range"]::-webkit-slider-runnable-track {
-  height: 6px !important;
-  border-radius: 3px !important;
-  border: none !important;
-}
-body.theme-light input[type="range"]::-webkit-slider-runnable-track {
-  background: rgba(0, 0, 0, 0.28) !important;
-}
-body.theme-dark input[type="range"]::-webkit-slider-runnable-track {
-  background: rgba(255, 255, 255, 0.18) !important;
-}
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none !important;
-  appearance: none !important;
-  /* 关键：thumb 高度 > 容器高度，这样 thumb 上下各超出，物理上轨道穿过 thumb 中部 */
-  height: 16px !important;
-  width: 16px !important;
-  border-radius: 50% !important;
-  background: var(--gs-accent) !important;
-  border: none !important;
-  /* 拖把下移：margin-top 0（累计下移 5px） */
-  margin-top: 0 !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25) !important;
+body.theme-dark input[type="range"] {
+  --slider-track-background: rgba(255, 255, 255, 0.14);
+  --slider-fill-background: var(--gs-accent);
+  --slider-thumb-background: #ffffff;
+  --slider-thumb-background-hover: #ffffff;
+  --slider-thumb-border-color: color-mix(in srgb, var(--gs-accent) 80%, transparent);
+  --slider-thumb-border-width: 2px;
+  --slider-thumb-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+  --slider-thumb-shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.5);
   cursor: pointer;
-  transition: transform .15s ease;
 }
-input[type="range"]:hover::-webkit-slider-thumb { transform: scale(1.1); }
-input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.2); }
-
-/* Firefox */
-input[type="range"]::-moz-range-track {
-  height: 6px !important;
-  border-radius: 3px !important;
-  border: none !important;
-}
-body.theme-light input[type="range"]::-moz-range-track {
-  background: rgba(0, 0, 0, 0.28);
-}
-body.theme-dark input[type="range"]::-moz-range-track {
-  background: rgba(255, 255, 255, 0.18);
-}
-input[type="range"]::-moz-range-thumb {
-  height: 16px !important;
-  width: 16px !important;
-  border-radius: 50% !important;
-  background: var(--gs-accent) !important;
-  border: none !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25) !important;
-  cursor: pointer;
-  transform: translateY(5px);  /* Firefox 拖把也下移，与 webkit 对齐 */
-}
+/* 轨道细腻圆角（不改高度，避免与原生 --slider-track-height 冲突） */
+input[type="range"]::-webkit-slider-runnable-track { border-radius: 999px; }
+input[type="range"]::-moz-range-track { border-radius: 999px; }
+/* 滑柄轻微放大反馈（仅 transform，不参与定位计算） */
+input[type="range"]::-webkit-slider-thumb { transition: transform .15s ease; }
+input[type="range"]:hover::-webkit-slider-thumb { transform: scale(1.08); }
+input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.16); }
+input[type="range"]::-moz-range-thumb { transition: transform .15s ease; }
+input[type="range"]:hover::-moz-range-thumb { transform: scale(1.08); }
 
 /* 搜索框（Obsidian 顶栏搜索） */
-body .search-input,
-body.theme-light .search-input input,
-body.theme-dark .search-input input {
+body .search-input-container {
   background-color: var(--background-modifier-form-field);
+  border-radius: 8px;
+}
+body .search-input-container input {
+  background-color: transparent;
   color: var(--text-normal);
 }
 
-/* 通知（右下角 toast） */
-body.theme-light .notice, body.theme-light .notification { background-color: #ffffff !important; color: #1c2230 !important; }
-body.theme-dark .notice, body.theme-dark .notification { background-color: #20242c !important; color: #e6eaf2 !important; }
+/* 通知（右上角 toast —— 1.15 中 notice 固定在顶部右侧） */
+body.theme-light .notice { background-color: #ffffff !important; color: #1c2230 !important; }
+body.theme-dark .notice { background-color: #20242c !important; color: #e6eaf2 !important; }
 
 /* 嵌入 iframe（PDF 等） */
 iframe { background-color: var(--background-primary); }
 
-/* 内部链接在浅色/深色下的 hover 下划线已经通过 --gs-accent 着色，确保颜色足够对比 */
+/* 内部链接 */
 .internal-link { color: var(--gs-accent); }
-.menu-item:not(.subitem *):not([class*="-dropdown-menu"] *) { border-radius: 0; }
-.menu-item:not(.subitem *):not([class*="-dropdown-menu"] *):hover,
+
+/* 菜单项：原生已有 --radius-s，这里仅在主菜单里拉平左右（子菜单不管） */
+.menu > .menu-item { border-radius: var(--radius-s); }
+.menu-item:hover,
 .suggestion-item.is-selected {
   background-color: var(--background-modifier-hover);
 }
 .popover .markdown-reading-view .markdown-preview-sizer { padding-block: 1rem; }
 .notice { border-radius: 12px; border: none; }
-
 
 /* =====================================================================
    实时预览编辑器微调
@@ -1418,18 +1419,21 @@ iframe { background-color: var(--background-primary); }
 .cm-active, .cm-active.cm-line { background: rgba(74, 111, 165, 0.05); border-radius: 4px; }
 body.theme-dark .cm-active { background: rgba(255,255,255,0.04); }
 
+/* 光标与选区跟随强调色 */
+body { --caret-color: var(--gs-accent); }
+body .cm-cursor { border-left-color: var(--gs-accent); }
+
 
 /* =====================================================================
-   自动隐藏：侧边工具栏 + 编辑工具栏（鼠标移到边缘呼出）
-   侧边栏采用"留位 + 推开"，呼出时挤压内容而非重叠（参考 Cupertino）
+   自动隐藏：侧边工具栏（鼠标移到边缘呼出）
+   侧边栏采用"留位 + 推开"，呼出时挤压内容而非重叠
    ===================================================================== */
-/* 左侧工具栏：留在文档流内、宽度收为 0（不留位），左边缘 absolute 触区 hover 后丝滑滑出并推开内容。
-   参考 Cupertino：不用 fixed 触区（会被 backdrop-filter 包含块坑掉），触区改 absolute 相对 .workspace。 */
 body.gs-autohide-ui .workspace { position: relative; }
 body.gs-autohide-ui .workspace-ribbon {
   flex: 0 0 auto !important;
   width: 0 !important;
   min-width: 0 !important;
+  padding-inline: 0 !important;
   opacity: 0;
   overflow: hidden;
   /* 去掉 backdrop-filter，避免它成为触区的包含块 */
@@ -1445,8 +1449,9 @@ body.gs-autohide-ui .workspace-ribbon::before {
   z-index: 40;
 }
 body.gs-autohide-ui .workspace-ribbon:hover {
-  width: var(--ribbon-width, 48px) !important;
+  width: var(--ribbon-width, 44px) !important;
   opacity: 1;
+  padding-inline: revert !important;
   backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
   -webkit-backdrop-filter: blur(var(--gs-blur)) saturate(1.5);
 }
@@ -1470,12 +1475,12 @@ body.gs-autohide-ui .workspace-ribbon:hover {
   .workspace-tab-header-container, .status-bar { margin: 0; border-radius: 0; }
 }
 
+
 /* =====================================================================
    界面融合：消除所有硬边界、分隔线、拖拽手柄的视觉存在感
-   整体目标 = 一整块连续玻璃，无边框无阴影，仅靠透明度/模糊分层
    ===================================================================== */
 
-/* 面板分界线：从实线改为渐变淡入淡出，视觉上看不到一刀切的切割线 */
+/* 面板分界线：从实线改为透明 */
 .workspace-split.mod-vertical > * + .workspace-leaf::before,
 .workspace-split.mod-horizontal > * + .workspace-leaf::before {
   content: "";
@@ -1486,19 +1491,30 @@ body.gs-autohide-ui .workspace-ribbon:hover {
 }
 .workspace-split.mod-horizontal > * + .workspace-leaf { border-top: none !important; }
 
-/* 垂直分隔线（侧栏 ↔ 主内容）：渐变微光，两端完全透明 */
-.workspace-split.mod-vertical > .workspace-split-resize-handle::before,
-.workspace .mod-vertical .workspace-split-resize-handle::before {
+/* 垂直分隔线（侧栏 ↔ 主内容）：透明 */
+.workspace-split.mod-vertical > .workspace-leaf-resize-handle::before,
+.workspace-split.mod-vertical > .workspace-split-resize-handle::before {
   background: transparent;
 }
 
-/* 调整手柄：极致纤细，默认透明，hover 轻微可见 */
+/* 调整手柄：极致纤细，默认透明，hover 轻微可见
+   —— Obsidian 1.15 实际 DOM 为 <hr class="workspace-leaf-resize-handle tappable">，
+      旧版 .workspace-split-resize-handle 已不存在；两者都写以兼容不同版本。 */
+.workspace-leaf-resize-handle,
 .workspace-split-resize-handle {
-  background: transparent !important;
-  transition: background .3s ease;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  transition: background-color .3s ease, border-color .3s ease;
 }
+.workspace-leaf-resize-handle:hover,
 .workspace-split-resize-handle:hover {
-  background: color-mix(in srgb, var(--gs-lg-rim) 20%, transparent) !important;
+  background-color: color-mix(in srgb, var(--gs-lg-rim) 20%, transparent) !important;
+  border-color: transparent !important;
+}
+/* 拖拽中：强调色微光，而非原生满色 --color-accent */
+.workspace-leaf-resize-handle.is-active {
+  background-color: color-mix(in srgb, var(--gs-accent) 55%, transparent) !important;
+  border-color: transparent !important;
 }
 
 /* 设置面板：去掉 setting-item 之间的硬底边框，改为更疏的间距 */
@@ -1510,12 +1526,12 @@ body.gs-autohide-ui .workspace-ribbon:hover {
 }
 .setting-item:last-child { border-bottom: none !important; }
 
-/* 菜单/右键菜单：无边框，阴影柔和，融为一体 */
-.menu, .dropdown-menu {
+/* 菜单：无边框，阴影柔和，融为一体 */
+.menu {
   border: none !important;
   box-shadow: 0 4px 16px rgba(0,0,0,0.06) !important;
 }
-.menu-separator, .menu .separator {
+.menu-separator {
   border-bottom: 1px solid var(--gs-glass-border-2) !important;
   margin: 2px 8px !important;
 }
@@ -1527,7 +1543,7 @@ body.gs-autohide-ui .workspace-ribbon:hover {
   border-radius: 12px !important;
 }
 
-/* 文件导航缩进引导线：极度淡化，几乎不可见但保留结构感 */
+/* 文件导航缩进引导线：极度淡化 */
 .nav-folder-children .nav-folder-title-content::before,
 .nav-files-container .tree-item .tree-item-self::before {
   border-left-color: var(--gs-glass-border-2) !important;
@@ -1535,9 +1551,6 @@ body.gs-autohide-ui .workspace-ribbon:hover {
 
 /* 属性面板 (Properties)：去掉条目间的硬分隔线 */
 .metadata-property { border-bottom: none !important; }
-.metadata-property:not(:last-child) {
-  border-bottom: 1px solid var(--gs-glass-border-2) !important;
-}
 
 /* 命令面板/快速切换：去除边框，圆角更柔和 */
 .prompt, .modal-container .modal {
@@ -1552,36 +1565,23 @@ body.gs-autohide-ui .workspace-ribbon:hover {
   border: none !important;
 }
 
-/* 石墨编辑器：去掉行号区与内容区的竖线分隔 */
+/* 编辑器：去掉行号区与内容区的竖线分隔（原生已是 none，这里兜底强制） */
 .markdown-source-view .cm-gutters {
   border-right: none !important;
 }
 
-/* 侧栏内部容器：全透明，不叠加额外背景层，与主内容区统一底色 */
+/* 侧栏内部容器：全透明 */
 body .nav-files-container,
 body .nav-buttons-container {
   background: transparent !important;
 }
 
-/* Notebook Navigator 面板：全透明，跟随侧栏玻璃统一底色 */
-.nn-navigation-container,
-.nn-navigation-header,
-.nn-navigation-panel,
-.nn-navigation-footer,
-.nn-navigation-calendar,
-.nn-navigation-calendar-header,
-.nn-navigation-calendar-body {
-  background: transparent !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  box-shadow: none !important;
-}
-
 /* 深色模式：调整手柄微光 */
+body.theme-dark .workspace-leaf-resize-handle:hover,
 body.theme-dark .workspace-split-resize-handle:hover {
-  background: color-mix(in srgb, var(--gs-lg-rim) 26%, transparent) !important;
+  background-color: color-mix(in srgb, var(--gs-lg-rim) 26%, transparent) !important;
 }
-body.theme-dark .menu, body.theme-dark .dropdown-menu {
+body.theme-dark .menu {
   box-shadow: 0 4px 20px rgba(0,0,0,0.25) !important;
 }
 body.theme-dark .prompt, body.theme-dark .modal-container .modal {
@@ -1593,7 +1593,7 @@ body.theme-dark .prompt, body.theme-dark .modal-container .modal {
    打印 / PDF 导出
    ===================================================================== */
 @media print {
-  /* —— 1. 体位复位：body 不设高，不相对定位 —— */
+  /* —— 1. 体位复位 —— */
   body { position: static !important; min-height: auto !important; height: auto !important; }
 
   /* —— 2. 光晕/噪点：关闭 fixed 伪元素 —— */
@@ -1605,7 +1605,7 @@ body.theme-dark .prompt, body.theme-dark .modal-container .modal {
     display: none !important; content: none !important;
   }
 
-  /* —— 3. Flexbox→block：避免打印 flex 宽度塌缩（竖排文字的根因） —— */
+  /* —— 3. Flexbox→block：避免打印 flex 宽度塌缩 —— */
   body .app-container,
   body .horizontal-main-container,
   body .workspace,
@@ -1626,7 +1626,6 @@ body.theme-dark .prompt, body.theme-dark .modal-container .modal {
 
   /* —— 4. 隐藏所有 UI：仅打印正文 —— */
   .workspace-ribbon,
-  .workspace-split.mod-horizontal > .workspace-leaf.mod-side-dock,
   .mod-left-split, .mod-right-split,
   .status-bar, .titlebar,
   .view-header, .workspace-tab-header-container {
@@ -1637,7 +1636,8 @@ body.theme-dark .prompt, body.theme-dark .modal-container .modal {
   .markdown-reading-view,
   .markdown-preview-view,
   .markdown-preview-sizer,
-  .markdown-rendered {
+  .markdown-rendered,
+  .cm-sizer {
     display: block !important;
     width: auto !important;
     max-width: 100% !important;
@@ -1646,7 +1646,7 @@ body.theme-dark .prompt, body.theme-dark .modal-container .modal {
     background: #ffffff !important;
   }
 
-  /* —— 6. 浅/深色背景变量复位 —— */
+  /* —— 6. 背景变量复位 —— */
   body.theme-light {
     --background-primary:        #ffffff !important;
     --background-primary-alt:    #f4f6fa !important;
@@ -1654,22 +1654,59 @@ body.theme-dark .prompt, body.theme-dark .modal-container .modal {
     --background-secondary-alt:  #eef1f6 !important;
   }
   body.theme-dark {
-    --background-primary:        #1a1d23 !important;
-    --background-primary-alt:    #20242c !important;
-    --background-secondary:      #16191e !important;
-    --background-secondary-alt:  #121419 !important;
+    --background-primary:        #ffffff !important;
+    --background-primary-alt:    #f4f6fa !important;
+    --background-secondary:      #f6f8fb !important;
+    --background-secondary-alt:  #eef1f6 !important;
+    --text-normal: #1c2230 !important;
+    --text-muted: #565f70 !important;
+    --gs-text: #1c2230 !important;
+    --gs-text-muted: #565f70 !important;
   }
 
-  /* —— 7. 去阴影/模糊（精准选择器，不用 * 通配符）—— */
+  /* —— 7. 去阴影/模糊 —— */
   .workspace-leaf-content, .workspace-split, .workspace-tabs, .workspace-tab-header-container,
   .view-header, .workspace-ribbon, .mod-left-split, .mod-right-split, .view-content,
   .markdown-reading-view, .markdown-preview-view, .markdown-preview-sizer, .markdown-rendered,
-  .status-bar, .modal, .popover, .menu, .suggestion-container, .prompt, .dropdown-menu,
+  .status-bar, .modal, .popover, .menu, .suggestion-container, .prompt,
   .notice, .hover-popover, .setting-item, .nav-files-container, .nav-folder,
-  .modal-container .modal, .modal-container .modal-content, .modal-container .modal-bg,
-  .x-color-picker-wrapper {
+  .modal-container .modal, .modal-container .modal-content, .modal-container .modal-bg {
     box-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
   }
 }
+
+
+/* =====================================================================
+   CHANGELOG
+   ---------------------------------------------------------------------
+   v1.2.0  — Obsidian 1.15.x 兼容性修复与优化
+     [修复] 面板拖拽手柄选择器失效：.workspace-split-resize-handle
+            → .workspace-leaf-resize-handle（1.15 实际 DOM）。
+     [修复] 正文行宽失效/双重限宽：--file-line-width 定义位置
+            由 .markdown-rendered 移到视图根节点，交由原生
+            .is-readable-line-width 规则居中；移除多余的 max-width。
+     [修复] 实时预览行高不生效：补 --line-height-normal。
+     [修复] 滑块滑柄偏位/轨道截断：不再用 height/margin-top !important
+            硬改几何，改用 1.15 的 --slider-* token 覆盖颜色。
+     [修复] 左侧 Ribbon 透明规则不匹配（.mod-left → .mod-primary）。
+     [修复] 侧栏透明规则失效：1.15 的侧栏容器为
+            .workspace-split.mod-sidedock.mod-primary-split / .mod-secondary-split，
+            且左右可互换；旧 .mod-left-split / .mod-right-split 已不再使用。
+            现以 .mod-sidedock 统一命中两侧，并保留旧名兼容。
+     [修复] .mod-side-dock 已被 1.15 移除，改用 .mod-sidedock。
+     [修复] 误伤规则：[class*="tooltip"] 会污染第三方插件容器，已移除。
+     [修复] 表格圆角/溢出裁剪移到 .table-wrapper，避免破坏 sticky 表头。
+     [修复] 深色 --gs-text-faint 少了透明度前的 6 位色值（#69738455）。
+     [修复] 不再覆写单一 --color-base-10，避免破坏 1.15 派生颜色变量。
+     [移除] 全部失效的第三方选择器（.nn-*、.claudian-*、
+            .x-color-picker-wrapper、.dropdown-menu、.multi-select-menu），
+            减少 CSS 体积与选择器匹配开销。
+     [清理] .notification / .editing-toolbar-* / .subitem 等非原生类。
+     [新增] Style Settings：纸张颗粒噪点开关（gs-noise）。
+     [新增] 适配 1.15 的 side-dock / vault profile 透明、Canvas、PDF、
+            Bases、Web Viewer 视图融合，以及 Callout 玻璃化。
+     [优化] 任务复选框改为变量驱动；光标颜色跟随强调色。
+     [优化] 移动端与打印样式同步使用新选择器。
+   ===================================================================== */
